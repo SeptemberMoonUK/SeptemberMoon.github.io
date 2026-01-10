@@ -1,32 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Your Name</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>September Moon</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="September Moon — beautiful pieces, thoughtfully made." />
 </head>
 <body>
-  <main class="card">
-    <h1>Your Name</h1>
-    <p class="tagline">Short description about you or your business.</p>
 
-    <section>
-      <h2>About</h2>
-      <p>
-        This is a simple website where you can introduce yourself, your business,
-        or whatever you want this site to be about.
-      </p>
+  <!-- Announcement bar -->
+  <div class="topbar">
+    <p><strong>Welcome to September Moon</strong> — handmade & thoughtfully curated pieces ✨</p>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="logo" href="#top" aria-label="September Moon home">
+        <span class="logo__mark">🌙</span>
+        <span class="logo__text">September Moon</span>
+      </a>
+
+      <button class="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="nav" class="nav">
+        <a href="#collections">Collections</a>
+        <a href="#bestsellers">Featured</a>
+        <a href="#testimonials">Testimonials</a>
+        <a href="#story">Our story</a>
+        <a class="nav__cta" href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="top">
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow">September Moon</p>
+          <h1>Simple, beautiful, and made with care.</h1>
+          <p class="lead">
+            A calm little corner of the internet for September Moon.
+            Browse featured pieces, read reviews, and get in touch.
+          </p>
+          <div class="hero__actions">
+            <a class="btn" href="#bestsellers">Browse featured</a>
+            <a class="btn btn--ghost" href="#contact">Get in touch</a>
+          </div>
+          <div class="hero__meta">
+            <div class="pill">UK-based</div>
+            <div class="pill">Small-batch</div>
+            <div class="pill">Gift-ready</div>
+          </div>
+        </div>
+
+        <!-- Replace this with an image later if you want -->
+        <div class="hero__image" role="img" aria-label="Soft pastel feature image placeholder">
+          <div class="hero__imageInner">
+            <p>Drop in a product photo here later</p>
+            <small>(or leave it as a clean aesthetic block)</small>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Contact</h2>
-      <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
+    <!-- Collections -->
+    <section id="collections" class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2>Collections</h2>
+          <p>Pick a category. (These can link to Instagram, Etsy, or separate pages later.)</p>
+        </div>
+
+        <div class="grid grid--3">
+          <a class="cardLink" href="#" aria-label="Collection 1">
+            <div class="cardLink__card">
+              <h3>Collection One</h3>
+              <p>Short description goes here.</p>
+              <span class="cardLink__arrow">Explore →</span>
+            </div>
+          </a>
+
+          <a class="cardLink" href="#" aria-label="Collection 2">
+            <div class="cardLink__card">
+              <h3>Collection Two</h3>
+              <p>Short description goes here.</p>
+              <span class="cardLink__arrow">Explore →</span>
+            </div>
+          </a>
+
+          <a class="cardLink" href="#" aria-label="Collection 3">
+            <div class="cardLink__card">
+              <h3>Collection Three</h3>
+              <p>Short description goes here.</p>
+              <span class="cardLink__arrow">Explore →</span>
+            </div>
+          </a>
+        </div>
+      </div>
     </section>
 
-    <footer>
-      <p>© 2026 Your Name</p>
-    </footer>
+    <!-- Featured / Bestsellers -->
+    <section id="bestsellers" class="section section--alt">
+      <div class="container">
+        <div class="section__head">
+          <h2>A few favourites</h2>
+          <p>Swap these placeholders for your real items (or services). No ecommerce needed.</p>
+        </div>
+
+        <div class="grid grid--4">
+          <article class="product">
+            <div class="product__img">Photo</div>
+            <h3 class="product__title">Item name</h3>
+            <p class="product__desc">A short, lovely one-line description.</p>
+            <p class="product__price">£—</p>
+          </article>
+
+          <article class="product">
+            <div class="product__img">Photo</div>
+            <h3 class="product__title">Item name</h3>
+            <p class="product__desc">A short, lovely one-line description.</p>
+            <p class="product__price">£—</p>
+          </article>
+
+          <article class="product">
+            <div class="product__img">Photo</div>
+            <h3 class="product__title">Item name</h3>
+            <p class="product__desc">A short, lovely one-line description.</p>
+            <p class="product__price">£—</p>
+          </article>
+
+          <article class="product">
+            <div class="product__img">Photo</div>
+            <h3 class="product__title">Item name</h3>
+            <p class="product__desc">A short, lovely one-line description.</p>
+            <p class="product__price">£—</p>
+          </article>
+        </div>
+
+        <div class="center">
+          <a class="btn btn--ghost" href="#contact">Ask about an order</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2>Testimonials</h2>
+          <p>Real words from lovely customers.</p>
+        </div>
+
+        <div class="testimonials">
+          <figure class="quote">
+            <blockquote>
+              “Absolutely beautiful — the quality is unreal and everything arrived gift-ready.”
+            </blockquote>
+            <figcaption>— Happy customer</figcaption>
+          </figure>
+
+          <figure class="quote">
+            <blockquote>
+              “Quick delivery and such friendly service. I’ll definitely be ordering again.”
+            </blockquote>
+            <figcaption>— Happy customer</figcaption>
+          </figure>
+
+          <figure class="quote">
+            <blockquote>
+              “Gorgeous pieces you don’t see everywhere. Exactly what I was looking for.”
+            </blockquote>
+            <figcaption>— Happy customer</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story / About -->
+    <section id="story" class="section section--alt">
+      <div class="container story">
+        <div>
+          <h2>Our story</h2>
+          <p>
+            Write a short paragraph about September Moon: what you make, why you started,
+            and what makes it special.
+          </p>
+          <p>
+            Keep it warm and simple. People love the “why”.
+          </p>
+        </div>
+
+        <div class="story__panel">
+          <h3>At a glance</h3>
+          <ul>
+            <li>✔ Small-batch and carefully made</li>
+            <li>✔ Thoughtful packaging</li>
+            <li>✔ UK shipping (edit as needed)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2>Contact</h2>
+          <p>Use whichever is easiest for you.</p>
+        </div>
+
+        <div class="contact">
+          <a class="contactCard" href="mailto:hello@septembermoon.uk">
+            <span class="contactCard__label">Email</span>
+            <span class="contactCard__value">hello@septembermoon.uk</span>
+          </a>
+
+          <a class="contactCard" href="#" target="_blank" rel="noreferrer">
+            <span class="contactCard__label">Instagram</span>
+            <span class="contactCard__value">@septembermoon</span>
+          </a>
+
+          <a class="contactCard" href="#" target="_blank" rel="noreferrer">
+            <span class="contactCard__label">Shop / Etsy</span>
+            <span class="contactCard__value">Link your shop</span>
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© <span id="year"></span> September Moon</p>
+      <p class="footer__small">
+        Built with simple HTML + GitHub Pages.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // tiny: mobile menu + footer year
+    const btn = document.querySelector(".menuBtn");
+    const nav = document.querySelector(".nav");
+    btn?.addEventListener("click", () => {
+      const open = nav.classList.toggle("nav--open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
