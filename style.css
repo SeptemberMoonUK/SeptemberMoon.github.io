@@ -64,8 +64,8 @@ a{ color:inherit; text-decoration:none; }
 }
 
 .logo__img{
-  height: 44px;        /* desktop logo height */
-  max-height: 44px;
+  height: 54px;        /* desktop logo height */
+  max-height: 54px;
   width: auto;
   display:block;
   object-fit: contain;
@@ -329,8 +329,8 @@ a{ color:inherit; text-decoration:none; }
 
   /* ✅ Slightly smaller logo on mobile */
   .logo__img{
-  height: 36px;        /* smaller on mobile */
-  max-height: 36px;
+  height: 46px;        /* smaller on mobile */
+  max-height: 46px;
 }
 
   .nav{
@@ -350,4 +350,5 @@ a{ color:inherit; text-decoration:none; }
   .nav a{ padding:.75rem .75rem; }
   .nav--open{ display:flex; }
 }
+
 
