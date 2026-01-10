@@ -350,6 +350,23 @@ a{ color:inherit; text-decoration:none; }
   .nav a{ padding:.75rem .75rem; }
   .nav--open{ display:flex; }
 }
+/* === LOGO SIZE CONTROL (edit these numbers) === */
+header .logo img{
+  height: 72px !important;
+  max-height: 72px !important;
+  width: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 950px){
+  header .logo img{
+    height: 56px !important;
+    max-height: 56px !important;
+  }
+}
+
+
 
 
 
