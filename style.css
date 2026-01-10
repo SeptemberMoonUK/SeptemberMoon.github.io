@@ -52,24 +52,22 @@ a{ color:inherit; text-decoration:none; }
   justify-content:space-between;
   padding: .9rem 0;
   gap:1rem;
+  min-height: 68px;
 }
 
+/* ✅ Logo: image only (layout change, no design changes) */
 .logo{
   display:flex;
   align-items:center;
-  gap:.65rem;
-  font-weight:700;
-  letter-spacing:.2px;
+  gap:0;
+  padding: .15rem 0;
 }
-.logo__mark{
-  width:40px; height:40px;
-  display:grid; place-items:center;
-  border-radius: 14px;
-  background: #fff;
-  border:1px solid var(--line);
-  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+
+.logo__img{
+  height: 52px;   /* desktop logo height */
+  width: auto;
+  display:block;
 }
-.logo__text{ font-size:1.05rem; }
 
 /* Nav */
 .nav{
@@ -326,6 +324,12 @@ a{ color:inherit; text-decoration:none; }
   .contact{ grid-template-columns: 1fr; }
 
   .menuBtn{ display:block; }
+
+  /* ✅ Slightly smaller logo on mobile */
+  .logo__img{
+    height: 44px;
+  }
+
   .nav{
     position:absolute;
     right: 4vw;
