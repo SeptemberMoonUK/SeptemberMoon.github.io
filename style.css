@@ -68,28 +68,6 @@ a{ color:inherit; text-decoration:none; }
   --brand-h: 72px; /* try 64–80 */
 }
 
-/* Common background settings */
-.brand__icon,
-.brand__word{
-  height: var(--brand-h);
-  background-image: url("./logo.png");
-  background-repeat: no-repeat;
-  background-size: auto var(--brand-h);
-  display:block;
-}
-
-/* Left crop: moon+cat */
-.brand__icon{
-  width: calc(var(--brand-h) * 1.05);
-  background-position: left center;
-}
-
-/* Right crop: text + tagline */
-.brand__word{
-  width: 520px;
-  background-position: calc(var(--brand-h) * -1.05) center;
-}
-
 /* Responsive tweaks */
 @media (max-width: 900px){
   :root{ --brand-h: 60px; }
@@ -374,4 +352,5 @@ a{ color:inherit; text-decoration:none; }
   .nav a{ padding:.75rem .75rem; }
   .nav--open{ display:flex; }
 }
+
 
