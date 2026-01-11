@@ -55,40 +55,36 @@ a{ color:inherit; text-decoration:none; }
   min-height: 56px;
 }
 
-/* === Brand logo: split-crop the SAME logo.png (no image editing) === */
+/* === Brand logo (two separate images, no cropping, no backgrounds) === */
 .brand{
   display:flex;
   align-items:center;
-  gap: 14px;
-  padding: .15rem 0;
-}
-
-/* Control the overall displayed height here */
-:root{
-  --brand-h: 72px; /* try 64–80 */
-}
-
-/* Responsive tweaks */
-@media (max-width: 900px){
-  .brand__icon{ height: 56px; }
-  .brand__word{ height: 40px; }
-}
-
-@media (max-width: 650px){
-  .brand__word{ display:none; }
+  gap:14px;
+  padding:.15rem 0;
 }
 
 .brand__icon{
-  height: 64px;
-  width: auto;
+  height:64px;
+  width:auto;
   display:block;
 }
 
 .brand__word{
-  height: 48px;
-  width: auto;
+  height:48px;
+  width:auto;
   display:block;
 }
+
+/* Responsive tweaks */
+@media (max-width:900px){
+  .brand__icon{ height:56px; }
+  .brand__word{ height:40px; }
+}
+
+@media (max-width:650px){
+  .brand__word{ display:none; }
+}
+
 
 /* Nav */
 .nav{
@@ -363,6 +359,7 @@ a{ color:inherit; text-decoration:none; }
   .nav a{ padding:.75rem .75rem; }
   .nav--open{ display:flex; }
 }
+
 
 
 
