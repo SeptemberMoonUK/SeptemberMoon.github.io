@@ -55,20 +55,50 @@ a{ color:inherit; text-decoration:none; }
   min-height: 56px;
 }
 
-/* ✅ Logo: image only (layout change, no design changes) */
-.logo{
+/* === Brand logo: split-crop the SAME logo.png (no image editing) === */
+.brand{
   display:flex;
   align-items:center;
-  gap:0;
+  gap: 14px;
   padding: .15rem 0;
 }
 
-.logo__img{
-  height: 106px;        /* desktop logo height */
-  max-height: 106px;
-  width: auto;
+/* Control the overall displayed height here */
+:root{
+  --brand-h: 72px; /* try 64–80 */
+}
+
+/* Common background settings */
+.brand__icon,
+.brand__word{
+  height: var(--brand-h);
+  background-image: url("logo.png");
+  background-repeat: no-repeat;
+  background-size: auto var(--brand-h);
   display:block;
-  object-fit: contain;
+}
+
+/* Left crop: moon+cat */
+.brand__icon{
+  width: calc(var(--brand-h) * 1.05);
+  background-position: left center;
+}
+
+/* Right crop: text + tagline */
+.brand__word{
+  width: 520px;
+  background-position: calc(var(--brand-h) * -1.05) center;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px){
+  :root{ --brand-h: 60px; }
+  .brand__word{ width: 380px; }
+}
+
+@media (max-width: 650px){
+  :root{ --brand-h: 52px; }
+  .brand__word{ display:none; }
 }
 
 /* Nav */
@@ -327,12 +357,6 @@ a{ color:inherit; text-decoration:none; }
 
   .menuBtn{ display:block; }
 
-  /* ✅ Slightly smaller logo on mobile */
-  .logo__img{
-  height: 86px;        /* smaller on mobile */
-  max-height: 86px;
-}
-
   .nav{
     position:absolute;
     right: 4vw;
@@ -350,30 +374,3 @@ a{ color:inherit; text-decoration:none; }
   .nav a{ padding:.75rem .75rem; }
   .nav--open{ display:flex; }
 }
-/* === LOGO SIZE CONTROL (edit these numbers) === */
-header .logo img{
-  height: 101px !important;
-  max-height: 101px !important;
-  width: auto !important;
-  display: block !important;
-  object-fit: contain !important;
-}
-
-@media (max-width: 950px){
-  header .logo img{
-    height: 86px !important;
-    max-height: 86px !important;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
