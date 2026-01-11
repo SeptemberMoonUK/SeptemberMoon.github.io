@@ -87,7 +87,8 @@ a{ color:inherit; text-decoration:none; }
 }
 
 @media (max-width:650px){
-  .brand__word{ display:none; }
+  .brand__word{ display:block; height:34px; }
+  .brand__icon{ height:44px; }
 }
 
 
