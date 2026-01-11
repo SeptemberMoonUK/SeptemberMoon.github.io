@@ -190,14 +190,12 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* Hero image placeholder */
-.hero__image{
-  border-radius: var(--radius2);
-  background: linear-gradient(135deg, #fff 0%, #f4eee6 55%, #efe7dd 100%);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  display:grid;
-  place-items:center;
-  padding:1rem;
+.hero__img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius: inherit;
+  display:block;
 }
 .hero__imageInner{
   text-align:center;
