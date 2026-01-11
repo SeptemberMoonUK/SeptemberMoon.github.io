@@ -72,7 +72,7 @@ a{ color:inherit; text-decoration:none; }
 .brand__icon,
 .brand__word{
   height: var(--brand-h);
-  background-image: url("logo.png");
+  background-image: url("./logo.png");
   background-repeat: no-repeat;
   background-size: auto var(--brand-h);
   display:block;
@@ -374,3 +374,4 @@ a{ color:inherit; text-decoration:none; }
   .nav a{ padding:.75rem .75rem; }
   .nav--open{ display:flex; }
 }
+
