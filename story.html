@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Our Story — September Moon</title>
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <p><strong>Welcome to September Moon</strong> — handmade & thoughtfully curated pieces ✨</p>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="September Moon home">
+        <img src="logo-icon.png" alt="" class="brand__icon">
+        <img src="logo-word.png" alt="September Moon" class="brand__word">
+      </a>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="collections.html">Collections</a>
+        <a href="story.html">Our story</a>
+        <a class="nav__cta" href="index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Story -->
+  <main>
+    <section class="section">
+      <div class="container story">
+        <div>
+          <h1>Our story</h1>
+
+          <p>
+            September Moon began with a love for beautiful childhood pieces —
+            the kind that feel timeless, soft, and full of meaning.
+          </p>
+
+          <p>
+            What started as a small passion quickly grew into a space for
+            carefully curated and handmade items, chosen for their quality,
+            charm, and attention to detail.
+          </p>
+
+          <p>
+            Every piece you see here is selected with care — whether it’s
+            vintage, contemporary, or handmade — with the aim of creating
+            something special for families and little ones.
+          </p>
+
+          <p>
+            September Moon is about slowing down, choosing thoughtfully,
+            and celebrating the beauty in small things.
+          </p>
+        </div>
+
+        <div class="story__panel">
+          <h3>At a glance</h3>
+          <ul>
+            <li>✔ Carefully curated pieces</li>
+            <li>✔ Vintage & contemporary styles</li>
+            <li>✔ Handmade options available</li>
+            <li>✔ UK-based</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© <span id="year"></span> September Moon</p>
+      <p class="footer__small">Built with simple HTML + GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
