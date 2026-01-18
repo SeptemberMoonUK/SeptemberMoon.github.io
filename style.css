@@ -305,6 +305,11 @@ a{ color:inherit; text-decoration:none; }
   font-size: 1.08rem;
   color: var(--text);
 }
+.story__aside{
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
 .story__image{
   background: var(--card);
   border: 1px solid var(--line);
