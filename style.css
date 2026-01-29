@@ -259,13 +259,16 @@ a{ color:inherit; text-decoration:none; }
   padding: 1rem;
 }
 
+/* ✅ This creates a consistent image frame */
 .product__img{
-  position: relative;
-  overflow: hidden;
+  position: relative;        /* ✅ sold badge anchors to this */
   border-radius: 14px;
-  aspect-ratio: 3 / 4; /* change this if you want */
+  overflow: hidden;
+  aspect-ratio: 4 / 5;       /* consistent card image shape */
+  background: #f4eee6;       /* optional fallback */
 }
 
+/* ✅ Image fills the frame */
 .product__photo{
   width:100%;
   height:100%;
