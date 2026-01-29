@@ -409,6 +409,22 @@ a{ color:inherit; text-decoration:none; }
   box-shadow: 0 12px 30px rgba(0,0,0,.06);
   padding: 1.1rem;
 }
+/* Icon-style contact cards */
+.contactCard--icon{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 1.6rem;
+  text-align: center;
+}
+.contactCard--icon img{
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+}
 .contactCard:hover{ transform: translateY(-1px); }
 .contactCard__label{ display:block; color:var(--muted); font-weight:900; font-size:.9rem; }
 .contactCard__value{ display:block; margin-top:.35rem; font-weight:900; }
