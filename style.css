@@ -417,7 +417,7 @@ a{ color:inherit; text-decoration:none; }
   min-height: 140px;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: .75rem;
