@@ -398,9 +398,9 @@ a{ color:inherit; text-decoration:none; }
 /* Contact */
 .contact{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
   gap: 1rem;
-  justify-items: center;
+  justify-content: center;
 }
 .contactCard{
   display:block;
