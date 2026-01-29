@@ -257,8 +257,15 @@ a{ color:inherit; text-decoration:none; }
   border-radius: var(--radius);
   box-shadow: 0 12px 30px rgba(0,0,0,.06);
   padding: 1rem;
-  position: relative;
 }
+
+.product__img{
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  aspect-ratio: 3 / 4; /* change this if you want */
+}
+
 .product__photo{
   width:100%;
   height:100%;
