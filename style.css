@@ -400,7 +400,7 @@ a{ color:inherit; text-decoration:none; }
   display: grid;
   grid-template-columns: repeat(4, minmax(140px, 180px));
   gap: 1rem;
-  justify-content: start; /* or center if you prefer */
+  justify-content: center;
   align-items: stretch;
 }
 .contactCard{
@@ -439,6 +439,9 @@ a{ color:inherit; text-decoration:none; }
 .contactCard--icon:hover{
   transform: translateY(-3px);
   box-shadow: 0 16px 35px rgba(0,0,0,.12);
+}
+.contactCard__text{
+  font-weight: 900;
 }
 .contactCard:hover{ transform: translateY(-1px); }
 .contactCard__label{ display:block; color:var(--muted); font-weight:900; font-size:.9rem; }
