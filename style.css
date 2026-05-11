@@ -33,11 +33,23 @@ body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   color:var(--text);
+
   background:
-    linear-gradient(rgba(246,234,211,.88), rgba(246,234,211,.88)),
-    url("./bg-texture.png");
-  background-size:cover;
-  background-position:center;
+    linear-gradient(rgba(246,234,211,.82), rgba(246,234,211,.82)),
+    url("./images/vintage-wallpaper.png");
+
+  background-size:
+    cover,
+    700px;
+
+  background-repeat:
+    no-repeat,
+    repeat;
+
+  background-position:
+    center,
+    top left;
+
   background-attachment:fixed;
 }
 
