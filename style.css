@@ -258,7 +258,18 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow);
 }
 .cardLink__card h3{ margin:0 0 .35rem; }
-.cardLink__card p{ margin:0; color:var(--muted); line-height:1.6; }
+.cardLink__card{
+  background:rgba(255,247,233,.82);
+  border:1px solid rgba(185,133,52,.28);
+  border-radius:16px;
+  padding:1.2rem;
+  box-shadow:0 8px 18px rgba(91,47,94,.05);
+  transition:all .15s ease;
+}
+.cardLink__card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(91,47,94,.08);
+}
 .cardLink__arrow,
 .product__price,
 .contactCard__value,
