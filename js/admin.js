@@ -1,4 +1,4 @@
-import { auth, db, storage, firebaseConfigured } from "./firebase.js";
+import { auth, db, storage, firebaseConfigured } from "./firebase.js?v=3";
 import {
   GoogleAuthProvider,
   onAuthStateChanged,

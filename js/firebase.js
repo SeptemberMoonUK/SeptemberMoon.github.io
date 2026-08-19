@@ -2,7 +2,7 @@ import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
-import { firebaseConfig, firebaseConfigured } from "./firebase-config.js?v=2";
+import { firebaseConfig, firebaseConfigured } from "./firebase-config.js?v=3";
 
 const app = firebaseConfigured ? (getApps().length ? getApp() : initializeApp(firebaseConfig)) : null;
 const auth = app ? getAuth(app) : null;
