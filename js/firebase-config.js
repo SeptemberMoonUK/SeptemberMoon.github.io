@@ -1,12 +1,12 @@
 // Paste the Firebase web-app configuration from Firebase Console > Project settings > Your apps.
 // This config is safe to ship in browser code; access control is enforced by Firebase Security Rules.
 export const firebaseConfig = {
-  apiKey: "PASTE_FIREBASE_API_KEY",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "PASTE_MESSAGING_SENDER_ID",
-  appId: "PASTE_FIREBASE_APP_ID"
+  apiKey: "AIzaSyCzFRt0oHT5SYqmAtTu1bpS61nMa9zxldc",
+  authDomain: "september-moon.firebaseapp.com",
+  projectId: "september-moon",
+  storageBucket: "september-moon.firebasestorage.app",
+  messagingSenderId: "572285773667",
+  appId: "1:572285773667:web:e16f8950a35e0428b25556"
 };
 
 export const firebaseConfigured = Boolean(
