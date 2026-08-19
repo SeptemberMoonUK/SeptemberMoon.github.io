@@ -107,32 +107,23 @@
 </section>
 <!-- Testimonials -->
 <section class="section" id="testimonials">
-<div class="container">
-<div class="section__head">
-<h2>Testimonials</h2>
-<p>Sonets from our favourite customers</p>
-</div>
-<div class="testimonials">
-<figure class="quote">
-<blockquote>
-              “Gorgeous wee set X”
-            </blockquote>
-<figcaption>— Clarabrewis31</figcaption>
-</figure>
-<figure class="quote">
-<blockquote>
-              “Great communication &amp; the dress was in perfect condition ♡”
-            </blockquote>
-<figcaption>— skylorrainex</figcaption>
-</figure>
-<figure class="quote">
-<blockquote>
-              “Came quickly, all in amazing condition as described.”
-            </blockquote>
-<figcaption>— shannoncamp24</figcaption>
-</figure>
-</div>
-</div>
+  <div class="container">
+
+    <div class="section__head">
+      <h2>Testimonials</h2>
+      <p>Sonets from our favourite customers</p>
+    </div>
+
+    <div
+      class="testimonials"
+      id="homepageTestimonials"
+    >
+      <p class="catalog-empty">
+        Loading testimonials…
+      </p>
+    </div>
+
+  </div>
 </section>
 <!-- Story / About -->
 <section class="section section--alt" id="story">
@@ -212,5 +203,11 @@
     });
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
+  <script
+  type="module"
+  src="js/testimonials.js?v=1"
+></script>
+
+
 </body>
 </html>
