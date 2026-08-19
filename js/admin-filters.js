@@ -122,6 +122,69 @@ function injectFilterStyles() {
       color: var(--muted);
       font-size: .88rem;
     }
+        .filter-admin-group {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 250, 240, .97);
+      overflow: hidden;
+    }
+
+    .filter-admin-group summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+
+      padding: 14px 16px;
+
+      cursor: pointer;
+      list-style: none;
+
+      font-weight: 850;
+    }
+
+    .filter-admin-group summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .filter-admin-group summary::after {
+      content: "+";
+
+      width: 26px;
+      height: 26px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+      background: rgba(185, 133, 52, .12);
+
+      color: var(--gold2);
+      font-size: 1.05rem;
+    }
+
+    .filter-admin-group[open] summary::after {
+      content: "−";
+    }
+
+    .filter-admin-group__content {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .filter-admin-group__content .filter-admin-row {
+      padding: 10px 12px;
+      border-radius: 10px;
+      box-shadow: none;
+    }
+
+    .filter-admin-group__content .filter-admin-row__meta {
+      margin-top: 4px;
+    }
 
     @media (max-width: 720px) {
       .filter-admin-row {
@@ -803,26 +866,24 @@ function renderFiltersAdmin() {
 
 
         return `
-          <section
-            style="
-              margin-bottom:26px;
-            "
-          >
+  <details class="filter-admin-group">
 
-            <h3
-              style="
-                margin:0 0 10px;
-                color:var(--text);
-              "
-            >
-              ${escapeHtml(
-                group.name ||
-                "Untitled section"
-              )}
-            </h3>
+    <summary>
+      <span>
+        ${escapeHtml(
+          group.name ||
+          "Untitled section"
+        )}
+      </span>
+
+      <small>
+        ${groupFilters.length}
+        filter${groupFilters.length === 1 ? "" : "s"}
+      </small>
+    </summary>
 
 
-            <div class="filter-admin-list">
+    <div class="filter-admin-group__content">
 
               ${groupFilters
                 .map((filter) => `
@@ -879,7 +940,7 @@ function renderFiltersAdmin() {
 
             </div>
 
-          </section>
+          </details>
         `;
 
       })
