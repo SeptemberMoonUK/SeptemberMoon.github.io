@@ -170,7 +170,7 @@ function injectFilterStyles() {
     .filter-admin-group__content {
       display: grid;
       grid-template-columns:
-        repeat(auto-fit, minmax(180px, 1fr));
+        repeat(auto-fit, minmax(140px, 1fr));
 
       gap: 8px;
       padding: 0 12px 12px;
@@ -185,6 +185,31 @@ function injectFilterStyles() {
     .filter-admin-group__content .filter-admin-row__meta {
       margin-top: 4px;
     }
+
+    .filter-admin-group__content .filter-admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.filter-admin-group__content .filter-admin-row__name {
+  font-size: .9rem;
+}
+
+.filter-admin-group__content .filter-admin-row__meta {
+  margin-top: 2px;
+}
+
+.filter-admin-group__content .mini-pill {
+  font-size: .65rem;
+  padding: 2px 6px;
+}
+
+.filter-admin-group__content .admin-btn--small {
+  padding: 5px 8px;
+  font-size: .72rem;
+}
 
     @media (max-width: 720px) {
       .filter-admin-row {
@@ -321,22 +346,26 @@ function injectFiltersAdmin() {
 
 </div>
 
-<div style="margin:8px 0 24px;">
+<details
+  class="filter-admin-group"
+  style="margin:8px 0 24px;"
+>
 
-  <h3 style="margin:0 0 10px;">
-    Sections
-  </h3>
+  <summary>
+    <span>Manage sections</span>
+  </summary>
 
   <div
     id="filterGroupList"
     class="filter-admin-list"
+    style="padding:0 12px 12px;"
   >
     <div class="filter-admin-empty">
       No sections yet.
     </div>
   </div>
 
-</div>
+</details>
 
 
 <h3 style="margin:0 0 10px;">
