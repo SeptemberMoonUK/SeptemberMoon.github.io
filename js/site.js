@@ -10,6 +10,8 @@ import {
 
 const FALLBACK_IMAGE = "images/comingsoon.png";
 
+const activeProductFilters = new Set();
+
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -186,29 +188,79 @@ async function setupCollectionFilters() {
       `)
       .join("");
 
+const applyFilters = async () => {
+  activeProductFilters.clear();
 
-  // For now this just clears the
-  // checkboxes. Product filtering
-  // comes in the next step.
+  choices
+    .querySelectorAll(
+      'input[name="catalogFilter"]:checked'
+    )
+    .forEach((input) => {
+      activeProductFilters.add(
+        input.value
+      );
+    });
+
+
+  if (count) {
+    count.textContent =
+      activeProductFilters.size
+        ? `(${activeProductFilters.size})`
+        : "";
+  }
+
+
+  const grid =
+    document.querySelector(
+      '[data-product-grid="in-stock"]'
+    );
+
+
+  if (!grid) {
+    return;
+  }
+
+
+  try {
+    const products =
+      await loadProducts();
+
+    renderGrid(
+      grid,
+      products
+    );
+
+  } catch (error) {
+    console.error(
+      "Could not apply product filters:",
+      error
+    );
+  }
+};
+
+
+choices.addEventListener(
+  "change",
+  applyFilters
+);
+
   clearButton?.addEventListener(
-    "click",
-    () => {
+  "click",
+  async () => {
 
-      choices
-        .querySelectorAll(
-          'input[name="catalogFilter"]'
-        )
-        .forEach((input) => {
-          input.checked = false;
-        });
+    choices
+      .querySelectorAll(
+        'input[name="catalogFilter"]'
+      )
+      .forEach((input) => {
+        input.checked = false;
+      });
 
 
-      if (count) {
-        count.textContent = "";
-      }
+    await applyFilters();
 
-    }
-  );
+  }
+);
 }
 
 async function checkMaintenance() {
@@ -271,6 +323,23 @@ function renderGrid(grid, products) {
       .filter((item) => item.collection === mode)
       .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
   }
+
+  if (
+  mode === "in-stock" &&
+  activeProductFilters.size > 0 &&
+  document.querySelector("#filterChoices")
+) {
+  subset = subset.filter((product) => {
+    const productFilters =
+      Array.isArray(product.filterIds)
+        ? product.filterIds
+        : [];
+
+    return productFilters.some((filterId) =>
+      activeProductFilters.has(filterId)
+    );
+  });
+}
 
   if (!subset.length) {
     grid.innerHTML = '<p class="catalog-empty">Nothing is listed here just yet.</p>';
