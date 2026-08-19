@@ -70,6 +70,147 @@ async function loadProducts() {
   }
 }
 
+async function loadProductFilters() {
+  if (!firebaseConfigured) {
+    return [];
+  }
+
+  try {
+    const snapshot =
+      await getDocs(
+        query(
+          collection(db, "productFilters"),
+          where("visible", "==", true)
+        )
+      );
+
+    return snapshot.docs
+      .map((item) => ({
+        id: item.id,
+        ...item.data()
+      }))
+      .sort(
+        (a, b) =>
+          (a.order ?? 9999) -
+          (b.order ?? 9999)
+      );
+
+  } catch (error) {
+    console.warn(
+      "Could not load product filters.",
+      error
+    );
+
+    return [];
+  }
+}
+
+
+async function setupCollectionFilters() {
+  const toggle =
+    document.querySelector("#filterToggle");
+
+  const panel =
+    document.querySelector("#filterPanel");
+
+  const choices =
+    document.querySelector("#filterChoices");
+
+  const clearButton =
+    document.querySelector("#clearFilters");
+
+  const count =
+    document.querySelector("#filterCount");
+
+
+  // This page does not have filters,
+  // so there is nothing to set up.
+  if (
+    !toggle ||
+    !panel ||
+    !choices
+  ) {
+    return;
+  }
+
+
+  // Open / close the filter panel.
+  toggle.addEventListener(
+    "click",
+    () => {
+      const opening =
+        panel.hidden;
+
+      panel.hidden =
+        !opening;
+
+      toggle.setAttribute(
+        "aria-expanded",
+        opening ? "true" : "false"
+      );
+    }
+  );
+
+
+  const filters =
+    await loadProductFilters();
+
+
+  if (!filters.length) {
+    choices.innerHTML = `
+      <p>
+        No filters are available yet.
+      </p>
+    `;
+
+    return;
+  }
+
+
+  choices.innerHTML =
+    filters
+      .map((filter) => `
+        <label class="catalog-filter__choice">
+
+          <input
+            type="checkbox"
+            name="catalogFilter"
+            value="${escapeHtml(filter.id)}"
+          >
+
+          <span>
+            ${escapeHtml(filter.name || "")}
+          </span>
+
+        </label>
+      `)
+      .join("");
+
+
+  // For now this just clears the
+  // checkboxes. Product filtering
+  // comes in the next step.
+  clearButton?.addEventListener(
+    "click",
+    () => {
+
+      choices
+        .querySelectorAll(
+          'input[name="catalogFilter"]'
+        )
+        .forEach((input) => {
+          input.checked = false;
+        });
+
+
+      if (count) {
+        count.textContent = "";
+      }
+
+    }
+  );
+}
+
 async function checkMaintenance() {
   if (!firebaseConfigured || document.body.dataset.maintenancePage === "true") {
     document.documentElement.classList.remove("site-checking");
@@ -153,4 +294,10 @@ async function renderProductGrids() {
 }
 
 await checkMaintenance();
-await Promise.all([renderMaintenancePage(), renderProductGrids()]);
+await checkMaintenance();
+
+await Promise.all([
+  renderMaintenancePage(),
+  renderProductGrids(),
+  setupCollectionFilters()
+]);

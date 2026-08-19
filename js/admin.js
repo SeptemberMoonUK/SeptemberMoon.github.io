@@ -29,7 +29,7 @@ const state = {
   user: null,
   products: [],
   settings: {},
-  productFilter: "in-stock",
+  productFilter: [],
   productSearch: "",
   editingId: null,
   dragId: null,
@@ -215,15 +215,129 @@ async function initialiseAdmin(user) {
   }
 
   await Promise.all([
-    loadProducts(),
-    loadSettings()
-  ]);
-}
+  loadProducts(),
+  loadProductFilters(),
+  loadSettings()
+]);
 
 
 // ============================================================
 // Products
 // ============================================================
+
+async function loadProductFilters() {
+  try {
+    const snapshot = await getDocs(
+      collection(db, "productFilters")
+    );
+
+    state.productFilters = snapshot.docs
+      .map((item) => ({
+        id: item.id,
+        ...item.data()
+      }))
+      .sort(
+        (a, b) =>
+          (a.order ?? 9999) -
+          (b.order ?? 9999)
+      );
+
+  } catch (error) {
+    console.error(
+      "Could not load product filters:",
+      error
+    );
+  }
+}
+
+function renderProductFilterChoices(selectedIds = []) {
+  let container = $("#productFilterChoices");
+
+  // Create the filter area the first time it is needed.
+  if (!container) {
+    const collectionField =
+      $("#productCollection")?.closest(".field");
+
+    if (!collectionField) {
+      console.error("Could not find product collection field.");
+      return;
+    }
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className =
+      "field field--span-2";
+
+    wrapper.innerHTML = `
+      <span>Product types / filters</span>
+
+      <div
+        id="productFilterChoices"
+        style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+          gap:8px;
+          padding:12px;
+          border:1px solid var(--line);
+          border-radius:12px;
+          background:white;
+        "
+      ></div>
+
+      <small>
+        Select one or more filters that apply to this product.
+      </small>
+    `;
+
+    collectionField.insertAdjacentElement(
+      "afterend",
+      wrapper
+    );
+
+    container =
+      $("#productFilterChoices");
+  }
+
+  const selected =
+    new Set(selectedIds || []);
+
+  if (!state.productFilters.length) {
+    container.innerHTML = `
+      <span class="muted">
+        No product filters have been created yet.
+      </span>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    state.productFilters
+      .map((filter) => `
+        <label
+          class="mini-toggle"
+          style="margin:0;"
+        >
+          <input
+            type="checkbox"
+            name="productFilter"
+            value="${escapeHtml(filter.id)}"
+            ${selected.has(filter.id) ? "checked" : ""}
+          >
+
+          <span>
+            ${escapeHtml(filter.name || "Unnamed filter")}
+            ${
+              filter.visible
+                ? ""
+                : ' <small>(hidden)</small>'
+            }
+          </span>
+        </label>
+      `)
+      .join("");
+}
 
 async function loadProducts() {
   try {
@@ -674,9 +788,9 @@ async function moveProduct(
 // Product dialog
 // ============================================================
 
-function openProductDialog(
-  id = null
-) {
+async function openProductDialog(id = null) {
+  await loadProductFilters();
+
   state.editingId = id;
 
   $("#productFormError").textContent =
@@ -735,6 +849,10 @@ function openProductDialog(
 
   $("#deleteProduct").hidden =
     !product;
+
+    renderProductFilterChoices(
+    product?.filterIds || []
+  );
 
   updateProductPreview();
 
@@ -964,13 +1082,18 @@ async function saveProduct(event) {
 
 
     const existing =
-      state.editingId
-        ? state.products.find(
-            (product) =>
-              product.id ===
-              state.editingId
-          )
-        : null;
+  state.editingId
+    ? state.products.find(
+        (product) =>
+          product.id ===
+          state.editingId
+      )
+    : null;
+
+
+const selectedFilterIds =
+  $$('input[name="productFilter"]:checked')
+    .map((input) => input.value);
 
 
     const data = {
@@ -992,6 +1115,9 @@ async function saveProduct(event) {
 
       collection:
         collectionName,
+
+        filterIds:
+  selectedFilterIds,
 
       imageUrl,
 

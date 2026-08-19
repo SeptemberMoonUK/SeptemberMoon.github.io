@@ -34,6 +34,53 @@
         <h1>Collections</h1>
         <p>Explore our curated dresses and special pieces</p>
       </div>
+      <div class="catalog-filter">
+
+  <button
+    id="filterToggle"
+    class="catalog-filter__button"
+    type="button"
+    aria-expanded="false"
+    aria-controls="filterPanel"
+  >
+    Filter
+    <span id="filterCount"></span>
+  </button>
+
+
+  <div
+    id="filterPanel"
+    class="catalog-filter__panel"
+    hidden
+  >
+
+    <div class="catalog-filter__head">
+
+      <strong>
+        Filter by type
+      </strong>
+
+      <button
+        id="clearFilters"
+        class="catalog-filter__clear"
+        type="button"
+      >
+        Clear filters
+      </button>
+
+    </div>
+
+
+    <div
+      id="filterChoices"
+      class="catalog-filter__choices"
+    >
+      Loading filters…
+    </div>
+
+  </div>
+
+</div>
       <div class="grid grid--4" data-product-grid="in-stock">
         <p class="catalog-empty">Loading collection…</p>
       </div>
