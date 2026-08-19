@@ -346,7 +346,20 @@ function injectFiltersAdmin() {
 
 
       <div class="form-grid">
+<label class="field">
 
+  <span>Section</span>
+
+  <select
+    id="filterGroup"
+    required
+  >
+    <option value="">
+      Choose a section…
+    </option>
+  </select>
+
+</label>
         <label class="field">
 
           <span>Filter name</span>
@@ -773,92 +786,197 @@ function renderFiltersAdmin() {
   }
 
 
-  list.innerHTML =
-    filterState.items
-      .map((filter, index) => `
+  const groupSections =
+    filterState.groups
+      .map((group) => {
 
-        <article class="filter-admin-row">
+        const groupFilters =
+          filterState.items.filter(
+            (filter) =>
+              filter.groupId === group.id
+          );
 
-          <div>
 
-            <div class="filter-admin-row__name">
+        if (!groupFilters.length) {
+          return "";
+        }
+
+
+        return `
+          <section
+            style="
+              margin-bottom:26px;
+            "
+          >
+
+            <h3
+              style="
+                margin:0 0 10px;
+                color:var(--text);
+              "
+            >
               ${escapeHtml(
-                filter.name ||
-                "Untitled filter"
+                group.name ||
+                "Untitled section"
               )}
+            </h3>
+
+
+            <div class="filter-admin-list">
+
+              ${groupFilters
+                .map((filter) => `
+
+                  <article class="filter-admin-row">
+
+                    <div>
+
+                      <div class="filter-admin-row__name">
+                        ${escapeHtml(
+                          filter.name ||
+                          "Untitled filter"
+                        )}
+                      </div>
+
+
+                      <div class="filter-admin-row__meta">
+
+                        <span class="mini-pill ${
+                          filter.visible
+                            ? ""
+                            : "mini-pill--hidden"
+                        }">
+
+                          ${
+                            filter.visible
+                              ? "Visible"
+                              : "Hidden"
+                          }
+
+                        </span>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="filter-admin-row__actions">
+
+                      <button
+                        class="admin-btn admin-btn--small"
+                        type="button"
+                        data-filter-edit="${escapeHtml(filter.id)}"
+                      >
+                        Edit
+                      </button>
+
+                    </div>
+
+                  </article>
+
+                `)
+                .join("")}
+
             </div>
 
+          </section>
+        `;
 
-            <div class="filter-admin-row__meta">
-
-              <span class="mini-pill ${
-                filter.visible
-                  ? ""
-                  : "mini-pill--hidden"
-              }">
-
-                ${
-                  filter.visible
-                    ? "Visible"
-                    : "Hidden"
-                }
-
-              </span>
-
-
-              <span class="mini-pill">
-                Position ${index + 1}
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="filter-admin-row__actions">
-
-            <button
-              class="icon-action"
-              type="button"
-              data-filter-move="up"
-              data-id="${escapeHtml(filter.id)}"
-              ${index === 0 ? "disabled" : ""}
-              aria-label="Move filter up"
-            >
-              ↑
-            </button>
-
-
-            <button
-              class="icon-action"
-              type="button"
-              data-filter-move="down"
-              data-id="${escapeHtml(filter.id)}"
-              ${
-                index === filterState.items.length - 1
-                  ? "disabled"
-                  : ""
-              }
-              aria-label="Move filter down"
-            >
-              ↓
-            </button>
-
-
-            <button
-              class="admin-btn admin-btn--small"
-              type="button"
-              data-filter-edit="${escapeHtml(filter.id)}"
-            >
-              Edit
-            </button>
-
-          </div>
-
-        </article>
-
-      `)
+      })
       .join("");
+
+
+  const uncategorised =
+    filterState.items.filter(
+      (filter) =>
+        !filter.groupId ||
+        !filterState.groups.some(
+          (group) =>
+            group.id === filter.groupId
+        )
+    );
+
+
+  const uncategorisedSection =
+    uncategorised.length
+      ? `
+        <section style="margin-bottom:26px;">
+
+          <h3
+            style="
+              margin:0 0 10px;
+              color:var(--muted);
+            "
+          >
+            Uncategorised
+          </h3>
+
+
+          <div class="filter-admin-list">
+
+            ${uncategorised
+              .map((filter) => `
+
+                <article class="filter-admin-row">
+
+                  <div>
+
+                    <div class="filter-admin-row__name">
+                      ${escapeHtml(
+                        filter.name ||
+                        "Untitled filter"
+                      )}
+                    </div>
+
+
+                    <div class="filter-admin-row__meta">
+
+                      <span class="mini-pill ${
+                        filter.visible
+                          ? ""
+                          : "mini-pill--hidden"
+                      }">
+
+                        ${
+                          filter.visible
+                            ? "Visible"
+                            : "Hidden"
+                        }
+
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="filter-admin-row__actions">
+
+                    <button
+                      class="admin-btn admin-btn--small"
+                      type="button"
+                      data-filter-edit="${escapeHtml(filter.id)}"
+                    >
+                      Edit
+                    </button>
+
+                  </div>
+
+                </article>
+
+              `)
+              .join("")}
+
+          </div>
+
+        </section>
+      `
+      : "";
+
+
+  list.innerHTML =
+    groupSections +
+    uncategorisedSection;
 
 
   $$("[data-filter-edit]")
@@ -876,26 +994,7 @@ function renderFiltersAdmin() {
       );
 
     });
-
-
-  $$("[data-filter-move]")
-    .forEach((button) => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          moveFilter(
-            button.dataset.id,
-            button.dataset.filterMove
-          );
-
-        }
-      );
-
-    });
 }
-
 
 // ============================================================
 // Open Add/Edit filter
@@ -913,6 +1012,30 @@ function openFilterDialog(id = null) {
             item.id === id
         )
       : null;
+
+      const groupSelect =
+  $("#filterGroup");
+
+
+groupSelect.innerHTML = `
+  <option value="">
+    Choose a section…
+  </option>
+
+  ${filterState.groups
+    .map((group) => `
+      <option
+        value="${escapeHtml(group.id)}"
+      >
+        ${escapeHtml(group.name || "Untitled section")}
+      </option>
+    `)
+    .join("")}
+`;
+
+
+groupSelect.value =
+  filter?.groupId || "";
 
 
   $("#filterDialogTitle")
@@ -965,6 +1088,10 @@ async function saveFilter(event) {
     $("#filterVisible")
       .checked;
 
+  const groupId =
+    $("#filterGroup")
+      .value;
+
 
   const saveButton =
     $("#saveFilter");
@@ -979,6 +1106,13 @@ async function saveFilter(event) {
     return;
   }
 
+  if (!groupId) {
+  $("#filterFormError")
+    .textContent =
+    "Please choose a section.";
+
+  return;
+}
 
   saveButton.disabled =
     true;
@@ -998,11 +1132,12 @@ async function saveFilter(event) {
           filterState.editingId
         ),
         {
-          name,
-          visible,
-          updatedAt:
-            serverTimestamp()
-        }
+  name,
+  visible,
+  groupId,
+  updatedAt:
+    serverTimestamp()
+}
       );
 
     } else {
@@ -1021,6 +1156,7 @@ async function saveFilter(event) {
         {
           name,
           visible,
+          groupId,
 
           order:
             filterState.items.length,

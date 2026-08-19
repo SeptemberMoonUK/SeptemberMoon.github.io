@@ -10,7 +10,7 @@ import {
 
 const FALLBACK_IMAGE = "images/comingsoon.png";
 
-const activeProductFilters = new Set();
+const activeProductFilterGroups = new Map();
 
 function escapeHtml(value = "") {
   return String(value)
@@ -107,6 +107,40 @@ async function loadProductFilters() {
   }
 }
 
+async function loadFilterGroups() {
+  if (!firebaseConfigured) {
+    return [];
+  }
+
+  try {
+    const snapshot =
+      await getDocs(
+        query(
+          collection(db, "filterGroups"),
+          where("visible", "==", true)
+        )
+      );
+
+    return snapshot.docs
+      .map((item) => ({
+        id: item.id,
+        ...item.data()
+      }))
+      .sort(
+        (a, b) =>
+          (a.order ?? 9999) -
+          (b.order ?? 9999)
+      );
+
+  } catch (error) {
+    console.warn(
+      "Could not load filter sections.",
+      error
+    );
+
+    return [];
+  }
+}
 
 async function setupCollectionFilters() {
   const toggle =
@@ -154,8 +188,14 @@ async function setupCollectionFilters() {
   );
 
 
-  const filters =
-    await loadProductFilters();
+  const [
+  filters,
+  groups
+] =
+  await Promise.all([
+    loadProductFilters(),
+    loadFilterGroups()
+  ]);
 
 
   if (!filters.length) {
@@ -170,44 +210,100 @@ async function setupCollectionFilters() {
 
 
   choices.innerHTML =
-    filters
-      .map((filter) => `
-        <label class="catalog-filter__choice">
+  groups
+    .map((group) => {
 
-          <input
-            type="checkbox"
-            name="catalogFilter"
-            value="${escapeHtml(filter.id)}"
-          >
+      const groupFilters =
+        filters.filter(
+          (filter) =>
+            filter.groupId === group.id
+        );
 
-          <span>
-            ${escapeHtml(filter.name || "")}
-          </span>
 
-        </label>
-      `)
-      .join("");
+      if (!groupFilters.length) {
+        return "";
+      }
+
+
+      return `
+        <div class="catalog-filter__group">
+
+          <h4 class="catalog-filter__group-title">
+            ${escapeHtml(group.name || "")}
+          </h4>
+
+          <div class="catalog-filter__group-options">
+
+            ${groupFilters
+              .map((filter) => `
+                <label class="catalog-filter__choice">
+
+                  <input
+                    type="checkbox"
+                    name="catalogFilter"
+                    value="${escapeHtml(filter.id)}"
+                    data-group-id="${escapeHtml(group.id)}"
+                  >
+
+                  <span>
+                    ${escapeHtml(filter.name || "")}
+                  </span>
+
+                </label>
+              `)
+              .join("")}
+
+          </div>
+
+        </div>
+      `;
+
+    })
+    .join("");
 
 const applyFilters = async () => {
-  activeProductFilters.clear();
-
-  choices
-    .querySelectorAll(
-      'input[name="catalogFilter"]:checked'
-    )
-    .forEach((input) => {
-      activeProductFilters.add(
-        input.value
-      );
-    });
+activeProductFilterGroups.clear();
 
 
-  if (count) {
-    count.textContent =
-      activeProductFilters.size
-        ? `(${activeProductFilters.size})`
-        : "";
+const checkedFilters =
+  choices.querySelectorAll(
+    'input[name="catalogFilter"]:checked'
+  );
+
+
+checkedFilters.forEach((input) => {
+
+  const groupId =
+    input.dataset.groupId;
+
+  if (!groupId) {
+    return;
   }
+
+
+  if (
+    !activeProductFilterGroups.has(groupId)
+  ) {
+    activeProductFilterGroups.set(
+      groupId,
+      new Set()
+    );
+  }
+
+
+  activeProductFilterGroups
+    .get(groupId)
+    .add(input.value);
+
+});
+
+
+if (count) {
+  count.textContent =
+    checkedFilters.length
+      ? `(${checkedFilters.length})`
+      : "";
+}
 
 
   const grid =
@@ -324,9 +420,9 @@ function renderGrid(grid, products) {
       .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
   }
 
-  if (
+ if (
   mode === "in-stock" &&
-  activeProductFilters.size > 0 &&
+  activeProductFilterGroups.size > 0 &&
   document.querySelector("#filterChoices")
 ) {
   subset = subset.filter((product) => {
@@ -335,9 +431,15 @@ function renderGrid(grid, products) {
         ? product.filterIds
         : [];
 
-    return productFilters.some((filterId) =>
-      activeProductFilters.has(filterId)
-    );
+    return [...activeProductFilterGroups.values()]
+      .every((selectedIds) => {
+
+        return productFilters.some(
+          (filterId) =>
+            selectedIds.has(filterId)
+        );
+
+      });
   });
 }
 
