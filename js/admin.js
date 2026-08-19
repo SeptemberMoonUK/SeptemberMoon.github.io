@@ -1569,6 +1569,27 @@ async function deleteGitHubImage(imagePath) {
 // GitHub image library
 // ============================================================
 
+function filterImageLibrary() {
+  const searchInput = $("#imageSearch");
+
+  if (!searchInput) {
+    return;
+  }
+
+  const search = searchInput.value
+    .trim()
+    .toLowerCase();
+
+  $$("#imageLibrary .image-card").forEach((card) => {
+    const imageName =
+      card.dataset.imageName || "";
+
+    card.hidden =
+      Boolean(search) &&
+      !imageName.includes(search);
+  });
+}
+
 async function loadImages() {
   const library = $("#imageLibrary");
 
@@ -1647,7 +1668,10 @@ async function loadImages() {
               </div>`;
 
         return `
-          <article class="image-card">
+          <article
+  class="image-card"
+  data-image-name="${escapeHtml(image.name.toLowerCase())}"
+>
 
             <img
               src="${escapeHtml(previewUrl)}"
@@ -1769,6 +1793,8 @@ async function loadImages() {
           }
         );
       });
+
+filterImageLibrary();
 
   } catch (error) {
     library.innerHTML =
@@ -1969,7 +1995,10 @@ async function openImagePicker() {
           `/${publicPath}`;
 
         return `
-          <article class="image-card">
+          <article
+  class="image-card"
+  data-image-name="${escapeHtml(image.name.toLowerCase())}"
+>
 
             <img
               src="${escapeHtml(previewUrl)}"
@@ -2258,6 +2287,10 @@ function wireEvents() {
     quickToggleMaintenance
   );
 
+$("#imageSearch").addEventListener(
+  "input",
+  filterImageLibrary
+);
 
   $("#imageUpload").addEventListener(
     "change",
