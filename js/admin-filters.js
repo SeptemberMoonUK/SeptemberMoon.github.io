@@ -319,6 +319,8 @@ function injectFiltersAdmin() {
 
 </div>
 
+</div>
+
 <div style="margin:8px 0 24px;">
 
   <h3 style="margin:0 0 10px;">
