@@ -28,8 +28,9 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 const state = {
   user: null,
   products: [],
+  productFilters: [],
   settings: {},
-  productFilter: [],
+  productFilter: "in-stock",
   productSearch: "",
   editingId: null,
   dragId: null,
@@ -219,6 +220,7 @@ async function initialiseAdmin(user) {
   loadProductFilters(),
   loadSettings()
 ]);
+}
 
 
 // ============================================================
