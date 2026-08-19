@@ -465,7 +465,6 @@ async function renderProductGrids() {
 }
 
 await checkMaintenance();
-await checkMaintenance();
 
 await Promise.all([
   renderMaintenancePage(),
