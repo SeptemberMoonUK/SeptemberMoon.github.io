@@ -1460,39 +1460,136 @@ async function quickToggleMaintenance() {
   await saveSettings();
 }
 
+function normaliseImagePath(value = "") {
+  return String(value)
+    .trim()
+    .replace(/^https?:\/\/[^/]+\//i, "")
+    .replace(/^\/+/, "");
+}
 
+
+function productsUsingImage(imagePath) {
+  const normalisedPath = normaliseImagePath(imagePath);
+
+  return state.products.filter((product) => {
+    const imageUrl = normaliseImagePath(product.imageUrl || "");
+    const storedPath = normaliseImagePath(product.imagePath || "");
+
+    return (
+      imageUrl === normalisedPath ||
+      storedPath === normalisedPath
+    );
+  });
+}
+
+
+async function deleteGitHubImage(imagePath) {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error(
+      "You must be signed in before deleting an image."
+    );
+  }
+
+  const usedBy = productsUsingImage(imagePath);
+
+  if (usedBy.length) {
+    const productNames = usedBy
+      .slice(0, 8)
+      .map((product) => `• ${product.title || "Untitled product"}`)
+      .join("\n");
+
+    const extra =
+      usedBy.length > 8
+        ? `\n• and ${usedBy.length - 8} more`
+        : "";
+
+    const confirmed = confirm(
+      `WARNING: This image is currently used by ${usedBy.length} product${usedBy.length === 1 ? "" : "s"}:\n\n` +
+      `${productNames}${extra}\n\n` +
+      `Deleting it from GitHub will cause those products to show a missing image.\n\n` +
+      `Delete the image anyway?`
+    );
+
+    if (!confirmed) {
+      return false;
+    }
+  } else {
+    const fileName = imagePath.split("/").pop();
+
+    const confirmed = confirm(
+      `Delete "${fileName}" from the website image library?\n\n` +
+      `This will permanently remove the file from GitHub.`
+    );
+
+    if (!confirmed) {
+      return false;
+    }
+  }
+
+  const idToken =
+    await user.getIdToken(true);
+
+  const response = await fetch(
+    IMAGE_UPLOAD_ENDPOINT,
+    {
+      method: "DELETE",
+
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        path: imagePath
+      })
+    }
+  );
+
+  let result = {};
+
+  try {
+    result = await response.json();
+  } catch {
+    // Ignore JSON parsing problems so we can show
+    // the HTTP status below.
+  }
+
+  if (!response.ok || !result.ok) {
+    throw new Error(
+      result.error ||
+      `Image deletion failed (${response.status}).`
+    );
+  }
+
+  return true;
+}
 // ============================================================
 // GitHub image library
 // ============================================================
 
 async function loadImages() {
-  const library =
-    $("#imageLibrary");
-
+  const library = $("#imageLibrary");
 
   if (!state.authorised) {
     return;
   }
 
-
   library.innerHTML =
     '<div class="empty-state">Loading GitHub images…</div>';
 
-
   try {
-    const response =
-      await fetch(
-        GITHUB_IMAGES_API,
-        {
-          cache: "no-store",
+    const response = await fetch(
+      GITHUB_IMAGES_API,
+      {
+        cache: "no-store",
 
-          headers: {
-            Accept:
-              "application/vnd.github+json"
-          }
+        headers: {
+          Accept: "application/vnd.github+json"
         }
-      );
-
+      }
+    );
 
     if (!response.ok) {
       throw new Error(
@@ -1500,33 +1597,26 @@ async function loadImages() {
       );
     }
 
-
     const items =
       await response.json();
 
-
-    const images =
-      (
-        Array.isArray(items)
-          ? items
-          : []
+    const images = (
+      Array.isArray(items)
+        ? items
+        : []
+    )
+      .filter(
+        (item) =>
+          item.type === "file"
       )
-        .filter(
-          (item) =>
-            item.type === "file"
-        )
-        .filter(
-          (item) =>
-            /\.(jpe?g|png|webp|gif|avif)$/i
-              .test(item.name)
-        )
-        .sort(
-          (a, b) =>
-            a.name.localeCompare(
-              b.name
-            )
-        );
-
+      .filter(
+        (item) =>
+          /\.(jpe?g|png|webp|gif|avif)$/i.test(item.name)
+      )
+      .sort(
+        (a, b) =>
+          a.name.localeCompare(b.name)
+      );
 
     if (!images.length) {
       library.innerHTML =
@@ -1535,63 +1625,88 @@ async function loadImages() {
       return;
     }
 
+    library.innerHTML = images
+      .map((image) => {
+        const publicPath =
+          image.path;
 
-    library.innerHTML =
-      images
-        .map((image) => {
-          const publicPath =
-            image.path;
+        const previewUrl =
+          image.download_url ||
+          `/${publicPath}`;
 
+        const usedBy =
+          productsUsingImage(publicPath);
 
-          const previewUrl =
-            image.download_url ||
-            `/${publicPath}`;
+        const usageText =
+          usedBy.length
+            ? `<div class="image-usage image-usage--used">
+                Used by ${usedBy.length} product${usedBy.length === 1 ? "" : "s"}
+              </div>`
+            : `<div class="image-usage">
+                Not currently used
+              </div>`;
 
+        return `
+          <article class="image-card">
 
-          return `
-            <article class="image-card">
+            <img
+              src="${escapeHtml(previewUrl)}"
+              alt=""
+            >
 
-              <img
-                src="${escapeHtml(previewUrl)}"
-                alt=""
+            <div class="image-card__body">
+
+              <div
+                class="image-card__name"
+                title="${escapeHtml(image.name)}"
               >
+                ${escapeHtml(image.name)}
+              </div>
 
-              <div class="image-card__body">
+              ${usageText}
 
-                <div
-                  class="image-card__name"
-                  title="${escapeHtml(image.name)}"
+              <div class="image-card__actions">
+
+                <button
+                  class="admin-btn admin-btn--small"
+                  type="button"
+                  data-copy-image="${escapeHtml(publicPath)}"
                 >
-                  ${escapeHtml(image.name)}
-                </div>
+                  Copy path
+                </button>
 
-                <div class="image-card__actions">
-
-                  <button
-                    class="admin-btn admin-btn--small"
-                    type="button"
-                    data-copy-image="${escapeHtml(publicPath)}"
-                  >
-                    Copy path
-                  </button>
-
-                  <a
-                    class="admin-btn admin-btn--small"
-                    href="${escapeHtml(previewUrl)}"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Open
-                  </a>
-
-                </div>
+                <a
+                  class="admin-btn admin-btn--small"
+                  href="${escapeHtml(previewUrl)}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Open
+                </a>
 
               </div>
 
-            </article>
-          `;
-        })
-        .join("");
+              <div
+                class="image-card__actions"
+                style="margin-top:6px"
+              >
+
+                <button
+                  class="admin-btn admin-btn--small admin-btn--danger"
+                  type="button"
+                  data-delete-github-image="${escapeHtml(publicPath)}"
+                >
+                  Delete image
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+        `;
+      })
+      .join("");
 
 
     $$("[data-copy-image]")
@@ -1605,7 +1720,6 @@ async function loadImages() {
               button.dataset.copyImage
             );
 
-
             toast(
               "Image path copied."
             );
@@ -1613,9 +1727,54 @@ async function loadImages() {
         );
       });
 
+
+    $$("[data-delete-github-image]")
+      .forEach((button) => {
+
+        button.addEventListener(
+          "click",
+          async () => {
+
+            const imagePath =
+              button.dataset.deleteGithubImage;
+
+            button.disabled = true;
+            button.textContent = "Deleting…";
+
+            try {
+              const deleted =
+                await deleteGitHubImage(imagePath);
+
+              if (!deleted) {
+                button.disabled = false;
+                button.textContent = "Delete image";
+                return;
+              }
+
+              toast(
+                "Image deleted from GitHub."
+              );
+
+              await loadImages();
+
+            } catch (error) {
+              toast(
+                errorMessage(error),
+                true
+              );
+
+              button.disabled = false;
+              button.textContent = "Delete image";
+            }
+          }
+        );
+      });
+
   } catch (error) {
     library.innerHTML =
-      `<div class="empty-state">${escapeHtml(errorMessage(error))}</div>`;
+      `<div class="empty-state">${escapeHtml(
+        errorMessage(error)
+      )}</div>`;
   }
 }
 
@@ -1924,7 +2083,7 @@ function addImageLibraryButton() {
 
 function wireEvents() {
     addImageLibraryButton();
-    
+
   $("#googleLogin").addEventListener(
     "click",
     handleLogin

@@ -1101,4 +1101,14 @@ a {
   .image-library {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .image-usage {
+  margin: 6px 0 10px;
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+.image-usage--used {
+  color: var(--gold2);
+  font-weight: 800;
+}
 }
