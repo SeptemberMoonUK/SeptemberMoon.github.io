@@ -6,7 +6,7 @@ export const firebaseConfig = {
   projectId: "september-moon",
   storageBucket: "september-moon.firebasestorage.app",
   messagingSenderId: "572285773667",
-  appId: "1:572285773667:web:e16f8950a35e0428b25556"
+  appId: "1:572285773667:web:e16f8950a35e0428b25556" 
 };
 
 export const firebaseConfigured = Boolean(
