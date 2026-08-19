@@ -558,9 +558,22 @@ html.site-checking body{visibility:hidden}
 
 /* Collections filter */
 
+/* Collections filter */
+
 .catalog-filter {
   margin: 1rem 0 1.25rem;
+
+  background: rgba(255, 250, 240, .96);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+
+  box-shadow: 0 4px 14px rgba(75, 37, 79, .04);
+
+  overflow: hidden;
 }
+
+
+/* Filter button */
 
 .catalog-filter__button {
   width: 100%;
@@ -570,9 +583,8 @@ html.site-checking body{visibility:hidden}
 
   padding: 1rem 3.4rem 1rem 1.25rem;
 
-  background: rgba(255, 250, 240, .96);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  background: transparent;
+  border: 0;
 
   color: var(--text);
   font: inherit;
@@ -581,18 +593,8 @@ html.site-checking body{visibility:hidden}
 
   cursor: pointer;
   position: relative;
-
-  box-shadow: 0 4px 14px rgba(75, 37, 79, .04);
-
-  transition:
-    border-color .2s ease,
-    box-shadow .2s ease;
 }
 
-.catalog-filter__button:hover {
-  border-color: rgba(185, 133, 52, .65);
-  box-shadow: 0 6px 18px rgba(75, 37, 79, .08);
-}
 
 .catalog-filter__button::after {
   content: "+";
@@ -616,6 +618,73 @@ html.site-checking body{visibility:hidden}
   font-weight: 500;
 }
 
+
 .catalog-filter__button[aria-expanded="true"]::after {
   content: "−";
+}
+
+
+/* Open filter area */
+
+.catalog-filter__panel {
+  padding: 0 1.25rem 1.25rem;
+
+  border-top: 1px solid rgba(185, 133, 52, .18);
+}
+
+
+.catalog-filter__panel[hidden] {
+  display: none;
+}
+
+
+/* Filter heading + clear button */
+
+.catalog-filter__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 1rem 0 .75rem;
+}
+
+
+.catalog-filter__clear {
+  border: 0;
+  background: transparent;
+
+  color: var(--accent);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
+/* Filter choices */
+
+.catalog-filter__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem 1.25rem;
+}
+
+
+.catalog-filter__choice {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+
+  cursor: pointer;
+}
+
+
+.catalog-filter__choice input {
+  width: 17px;
+  height: 17px;
+
+  accent-color: var(--accent);
 }
