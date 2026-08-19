@@ -12,6 +12,15 @@ const testimonialsContainer =
   document.querySelector("#homepageTestimonials");
 
 
+const TESTIMONIALS_PER_PAGE = 3;
+const DISPLAY_TIME = 5000;
+const FADE_TIME = 500;
+
+let testimonials = [];
+let currentPage = 0;
+let rotationTimer = null;
+
+
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -19,6 +28,88 @@ function escapeHtml(value = "") {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+
+function renderTestimonialsPage() {
+  if (!testimonials.length) {
+    return;
+  }
+
+  const start =
+    currentPage * TESTIMONIALS_PER_PAGE;
+
+  const visibleTestimonials =
+    testimonials.slice(
+      start,
+      start + TESTIMONIALS_PER_PAGE
+    );
+
+
+  testimonialsContainer.innerHTML =
+    visibleTestimonials
+      .map((testimonial) => `
+        <figure class="quote">
+
+          <blockquote>
+            “${escapeHtml(testimonial.quote || "")}”
+          </blockquote>
+
+          <figcaption>
+            — ${escapeHtml(
+              testimonial.customer || "Customer"
+            )}
+          </figcaption>
+
+        </figure>
+      `)
+      .join("");
+}
+
+
+function startRotation() {
+  const totalPages =
+    Math.ceil(
+      testimonials.length /
+      TESTIMONIALS_PER_PAGE
+    );
+
+  // If there are only 3 or fewer,
+  // there is nothing to rotate.
+  if (totalPages <= 1) {
+    return;
+  }
+
+
+  rotationTimer = setInterval(() => {
+
+    // Fade current testimonials out
+    testimonialsContainer.classList.add(
+      "testimonials--fading"
+    );
+
+
+    setTimeout(() => {
+
+      currentPage =
+        (currentPage + 1) % totalPages;
+
+
+      renderTestimonialsPage();
+
+
+      // Fade new testimonials back in
+      requestAnimationFrame(() => {
+
+        testimonialsContainer.classList.remove(
+          "testimonials--fading"
+        );
+
+      });
+
+    }, FADE_TIME);
+
+  }, DISPLAY_TIME);
 }
 
 
@@ -48,7 +139,7 @@ async function loadTestimonials() {
       await getDocs(testimonialsQuery);
 
 
-    const testimonials =
+    testimonials =
       snapshot.docs
         .map((item) => ({
           id: item.id,
@@ -69,24 +160,15 @@ async function loadTestimonials() {
     }
 
 
-    testimonialsContainer.innerHTML =
-      testimonials
-        .map((testimonial) => `
-          <figure class="quote">
+    currentPage = 0;
 
-            <blockquote>
-              “${escapeHtml(testimonial.quote || "")}”
-            </blockquote>
+    renderTestimonialsPage();
 
-            <figcaption>
-              — ${escapeHtml(testimonial.customer || "Customer")}
-            </figcaption>
+    startRotation();
 
-          </figure>
-        `)
-        .join("");
 
   } catch (error) {
+
     console.error(
       "Could not load testimonials:",
       error
