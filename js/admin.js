@@ -1686,12 +1686,245 @@ async function uploadFiles(files) {
   }
 }
 
+// ============================================================
+// Existing GitHub image picker for products
+// ============================================================
 
+function ensureImagePicker() {
+  if ($("#imagePickerDialog")) {
+    return;
+  }
+
+  const dialog = document.createElement("dialog");
+  dialog.id = "imagePickerDialog";
+  dialog.className = "product-dialog";
+
+  dialog.innerHTML = `
+    <div class="product-form">
+
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">Image library</p>
+          <h2>Choose an image</h2>
+          <p class="muted">
+            Select an existing image from your GitHub image library.
+          </p>
+        </div>
+
+        <button
+          id="closeImagePicker"
+          class="icon-btn"
+          type="button"
+          aria-label="Close image library"
+        >
+          ×
+        </button>
+      </div>
+
+      <div
+        id="imagePickerGrid"
+        class="image-library"
+      >
+        <div class="empty-state">
+          Loading images…
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  $("#closeImagePicker").addEventListener(
+    "click",
+    () => {
+      dialog.close();
+    }
+  );
+}
+
+
+async function openImagePicker() {
+  ensureImagePicker();
+
+  const dialog = $("#imagePickerDialog");
+  const grid = $("#imagePickerGrid");
+
+  grid.innerHTML =
+    '<div class="empty-state">Loading images…</div>';
+
+  dialog.showModal();
+
+  try {
+    const response = await fetch(
+      GITHUB_IMAGES_API,
+      {
+        cache: "no-store",
+        headers: {
+          Accept: "application/vnd.github+json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Could not load image library (${response.status}).`
+      );
+    }
+
+    const items = await response.json();
+
+    const images = (
+      Array.isArray(items)
+        ? items
+        : []
+    )
+      .filter(
+        (item) =>
+          item.type === "file"
+      )
+      .filter(
+        (item) =>
+          /\.(jpe?g|png|webp|gif|avif)$/i.test(
+            item.name
+          )
+      )
+      .sort(
+        (a, b) =>
+          a.name.localeCompare(b.name)
+      );
+
+    if (!images.length) {
+      grid.innerHTML =
+        '<div class="empty-state">No images are currently available.</div>';
+
+      return;
+    }
+
+    grid.innerHTML = images
+      .map((image) => {
+        const publicPath = image.path;
+
+        const previewUrl =
+          image.download_url ||
+          `/${publicPath}`;
+
+        return `
+          <article class="image-card">
+
+            <img
+              src="${escapeHtml(previewUrl)}"
+              alt=""
+            >
+
+            <div class="image-card__body">
+
+              <div
+                class="image-card__name"
+                title="${escapeHtml(image.name)}"
+              >
+                ${escapeHtml(image.name)}
+              </div>
+
+              <div class="image-card__actions">
+
+                <button
+                  class="admin-btn admin-btn--small admin-btn--primary"
+                  type="button"
+                  data-use-library-image="${escapeHtml(publicPath)}"
+                >
+                  Use image
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+        `;
+      })
+      .join("");
+
+    $$("[data-use-library-image]")
+      .forEach((button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const path =
+              button.dataset.useLibraryImage;
+
+            // Clear any newly selected local upload
+            $("#productImageFile").value = "";
+
+            // Put the GitHub image path into the product
+            $("#productImageUrl").value = path;
+
+            updateProductPreview();
+
+            dialog.close();
+
+            toast("Image selected.");
+          }
+        );
+      });
+
+  } catch (error) {
+    grid.innerHTML =
+      `<div class="empty-state">${escapeHtml(
+        errorMessage(error)
+      )}</div>`;
+  }
+}
+
+
+function addImageLibraryButton() {
+  const fileInput =
+    $("#productImageFile");
+
+  if (
+    !fileInput ||
+    $("#chooseExistingImage")
+  ) {
+    return;
+  }
+
+  const button =
+    document.createElement("button");
+
+  button.id =
+    "chooseExistingImage";
+
+  button.type =
+    "button";
+
+  button.className =
+    "admin-btn";
+
+  button.textContent =
+    "Choose from image library";
+
+  button.style.marginTop =
+    "8px";
+
+  button.addEventListener(
+    "click",
+    openImagePicker
+  );
+
+  fileInput.insertAdjacentElement(
+    "afterend",
+    button
+  );
+}
 // ============================================================
 // Events
 // ============================================================
 
 function wireEvents() {
+    addImageLibraryButton();
+    
   $("#googleLogin").addEventListener(
     "click",
     handleLogin
