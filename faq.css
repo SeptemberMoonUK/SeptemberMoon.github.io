@@ -1,0 +1,133 @@
+.faq-page {
+  min-height: 70vh;
+}
+
+.faq-shell {
+  width: min(900px, 92vw);
+}
+
+.faq-intro {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 2rem;
+}
+
+.faq-intro h1 {
+  margin: .75rem 0 .65rem;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.08;
+}
+
+.faq-intro > p:last-child {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+.faq-status,
+.faq-empty {
+  background: rgba(255,247,233,.82);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.faq-list {
+  display: grid;
+  gap: .9rem;
+}
+
+.faq-item {
+  background: rgba(255,247,233,.88);
+  border: 1px solid rgba(185,133,52,.32);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(91,47,94,.06);
+  overflow: hidden;
+}
+
+.faq-item[open] {
+  border-color: rgba(185,133,52,.58);
+  box-shadow: 0 12px 28px rgba(91,47,94,.09);
+}
+
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.1rem 3.4rem 1.1rem 1.25rem;
+  position: relative;
+  font-family: 'SeptemberFont', serif;
+  font-size: 1.2rem;
+  letter-spacing: .02em;
+  color: var(--text);
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  position: absolute;
+  right: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(185,133,52,.12);
+  color: var(--accent);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform .18s ease;
+}
+
+.faq-item[open] summary::after {
+  content: "−";
+}
+
+.faq-item__answer {
+  border-top: 1px solid rgba(174,124,50,.22);
+  padding: 1rem 1.25rem 1.25rem;
+  color: var(--muted);
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.faq-contact {
+  margin-top: 2rem;
+  padding: 1.6rem;
+  text-align: center;
+  background: rgba(255,247,233,.72);
+  border: 1px solid var(--line);
+  border-radius: var(--radius2);
+  box-shadow: var(--shadow);
+}
+
+.faq-contact h2 {
+  margin: 0 0 .45rem;
+}
+
+.faq-contact p {
+  margin: 0 auto 1rem;
+  max-width: 620px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+@media (max-width: 650px) {
+  .faq-item summary {
+    font-size: 1.08rem;
+    padding-left: 1rem;
+  }
+
+  .faq-item__answer {
+    padding: .9rem 1rem 1.1rem;
+  }
+}

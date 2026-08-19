@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html class="site-checking" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ – September Moon</title>
+  <meta name="description" content="Frequently asked questions about September Moon orders, products, delivery and more.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="faq.css?v=1">
+  <script>setTimeout(()=>document.documentElement.classList.remove('site-checking'),3000)</script>
+  <script type="module" src="js/site.js?v=1"></script>
+  <script type="module" src="js/faq.js?v=1"></script>
+</head>
+<body>
+  <div class="topbar">
+    <p><strong>Welcome to September Moon</strong> — ✨ Fashion Born From Moonbeams ✨</p>
+  </div>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="September Moon home">
+        <img src="nlogo.png" alt="" class="brand__icon">
+        <img src="nlword.png" alt="September Moon" class="brand__word">
+      </a>
+
+      <button class="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="collections.html">Collections</a>
+        <a href="Coming-Soon.html">Coming Soon</a>
+        <a href="story.html">Our story</a>
+        <a href="faq.html" aria-current="page">FAQ</a>
+        <a class="nav__cta" href="index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section faq-page">
+      <div class="container faq-shell">
+        <div class="faq-intro">
+          <p class="eyebrow">September Moon</p>
+          <h1>Frequently Asked Questions</h1>
+          <p>
+            A little place for the questions we get asked most often.
+            Tap any question below to reveal the answer.
+          </p>
+        </div>
+
+        <div id="faqStatus" class="faq-status" aria-live="polite">
+          Loading questions…
+        </div>
+
+        <div id="faqList" class="faq-list" hidden></div>
+
+        <section class="faq-contact">
+          <h2>Still need a little help?</h2>
+          <p>If your question is not covered here, you are always welcome to get in touch.</p>
+          <a class="btn" href="index.html#contact">Contact September Moon</a>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© <span id="year"></span> September Moon</p>
+      <p class="footer__small">Magical Outfits for Magical Memories!</p>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.querySelector(".menuBtn");
+    const nav = document.querySelector(".nav");
+    btn?.addEventListener("click", () => {
+      const open = nav.classList.toggle("nav--open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

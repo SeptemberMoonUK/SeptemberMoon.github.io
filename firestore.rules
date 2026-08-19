@@ -21,6 +21,14 @@ service cloud.firestore {
       allow read: if resource.data.visible == true || isAdmin();
       allow create, update, delete: if isAdmin();
     }
+    
+        match /faqs/{faqId} {
+      // Visitors can only read FAQ items that are explicitly visible.
+      // The admin can read and manage all FAQ items.
+      allow read: if resource.data.visible == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
 
     match /settings/site {
       // Maintenance status/text must be readable before login.
