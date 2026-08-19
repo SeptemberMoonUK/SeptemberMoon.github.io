@@ -536,3 +536,8 @@ a{ color:inherit; text-decoration:none; }
 
 
 
+
+/* Backend-driven catalogue / maintenance gate */
+html.site-checking body{visibility:hidden}
+.catalog-empty{grid-column:1/-1;margin:0;padding:2rem;text-align:center;color:var(--muted);background:rgba(255,247,233,.65);border:1px dashed var(--line);border-radius:var(--radius)}
+.product--sold .product__photo{filter:saturate(.75);opacity:.78}

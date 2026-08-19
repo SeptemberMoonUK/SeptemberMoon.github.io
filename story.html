@@ -1,111 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html class="site-checking" lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Our Story — September Moon</title>
-  <link rel="stylesheet" href="style.css?v=1">
-  <link rel="icon" href="/favicon.ico">
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Our Story — September Moon</title>
+<link href="style.css?v=1" rel="stylesheet"/>
+<link href="/favicon.ico" rel="icon"/>
+<script>setTimeout(()=>document.documentElement.classList.remove('site-checking'),3000)</script><script src="js/site.js?v=1" type="module"></script></head>
 <body>
-
-  <!-- Topbar -->
-  <div class="topbar">
-    <p><strong>Welcome to September Moon</strong> — handmade & thoughtfully curated pieces ✨</p>
-  </div>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="container header__inner">
-      <a class="brand" href="index.html" aria-label="September Moon home">
-        <img src="nlogo.png" alt="" class="brand__icon">
-        <img src="nlword.png" alt="September Moon" class="brand__word">
-      </a>
-
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="collections.html">Collections</a>
-        <a href="Coming-Soon.html">Coming Soon</a>
-        <a href="story.html">Our story</a>
-        <a class="nav__cta" href="index.html#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Story -->
-  <main>
-    <section class="section">
-      <div class="container story">
-        <div>
-          <h1>Our story</h1>
-
-          <p>
+<!-- Topbar -->
+<div class="topbar">
+<p><strong>Welcome to September Moon</strong> — handmade &amp; thoughtfully curated pieces ✨</p>
+</div>
+<!-- Header -->
+<header class="header">
+<div class="container header__inner">
+<a aria-label="September Moon home" class="brand" href="index.html">
+<img alt="" class="brand__icon" src="nlogo.png"/>
+<img alt="September Moon" class="brand__word" src="nlword.png"/>
+</a>
+<nav class="nav">
+<a href="index.html">Home</a>
+<a href="collections.html">Collections</a>
+<a href="Coming-Soon.html">Coming Soon</a>
+<a href="story.html">Our story</a>
+<a class="nav__cta" href="index.html#contact">Contact</a>
+</nav>
+</div>
+</header>
+<!-- Story -->
+<main>
+<section class="section">
+<div class="container story">
+<div>
+<h1>Our story</h1>
+<p>
             September Moon was born from a simple love of fashion — and the joy of dressing my little girl.
           </p>
-
-          <p>
+<p>
             Like so many parents, I found myself drawn to beautiful children’s clothing, but increasingly
             disappointed by what I saw in mainstream stores. Contemporary fashion often seemed to rush
             children out of childhood, styling them to look older far too soon. I couldn’t help but reminisce
             about a time when children dressed like children — soft silhouettes, thoughtful details, and an
             unmistakable sweetness that felt timeless.
           </p>
-
-          <p>
+<p>
             That spark grew unexpectedly during a chance retail find. I came across a woman clearing out her
             daughter’s wardrobe, filled with the most beautiful vintage pieces. Dresses from brands I had never
             heard of, each one crafted with care and character. Curious, I began to research — and before I knew
             it (and admittedly after spending far too much of my husband’s money), a fiery passion for vintage
             children’s clothing had taken hold.
           </p>
-
-          <p>
+<p>
             What began as admiration quickly became a collection. Over time, I sourced vintage fashions from
             near and far, even all the way from the USA, alongside carefully chosen contemporary pieces that
             still honoured childhood for what it should be — playful, innocent, and full of wonder.
           </p>
-
-          <p>
+<p>
             With a growing collection and a hope of improving my family’s home life, September Moon came to life.
           </p>
-
-          <p>
+<p>
             Today, September Moon brings together vintage and modern children’s fashion with a shared heart:
             to offer beautiful clothing that allows little girls to simply be little girls. Each piece is chosen
             so that families can enjoy a small slice of the good years — those fleeting, magical moments when
             childhood feels endless and dressing up is pure joy.
           </p>
-        </div>
-
-        <div class="story__aside">
-  <div class="story__panel">
-    <h3>At a glance</h3>
-    <ul>
-      <li>✔ Vintage & contemporary children’s fashion</li>
-      <li>✔ Carefully sourced, timeless pieces</li>
-      <li>✔ Inspired by traditional childhood style</li>
-      <li>✔ UK-based, family-run</li>
-    </ul>
-  </div>
-
-  <div class="story__image">
-    <img src="images/story-photo.jpg" alt="September Moon story image">
-  </div>
 </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <p>© <span id="year"></span> September Moon</p>
-      <p class="footer__small">Built with simple HTML & Hosted by Github</p>
-    </div>
-  </footer>
-
-  <script>
+<div class="story__aside">
+<div class="story__panel">
+<h3>At a glance</h3>
+<ul>
+<li>✔ Vintage &amp; contemporary children’s fashion</li>
+<li>✔ Carefully sourced, timeless pieces</li>
+<li>✔ Inspired by traditional childhood style</li>
+<li>✔ UK-based, family-run</li>
+</ul>
+</div>
+<div class="story__image">
+<img alt="September Moon story image" src="images/story-photo.jpg"/>
+</div>
+</div>
+</div></section>
+</main>
+<!-- Footer -->
+<footer class="footer">
+<div class="container footer__inner">
+<p>© <span id="year"></span> September Moon</p>
+<p class="footer__small">Built with simple HTML &amp; Hosted by Github</p>
+</div>
+</footer>
+<script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-
 </body>
 </html>

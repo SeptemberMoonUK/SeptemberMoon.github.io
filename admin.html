@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>September Moon Admin</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+  <div id="setupRequired" class="auth-shell" hidden>
+    <div class="auth-card">
+      <img src="nlogo.png" alt="" class="auth-logo">
+      <h1>Backend setup needed</h1>
+      <p>The admin area is built, but Firebase still needs your project configuration before Google sign-in can work.</p>
+      <p class="muted">Follow <strong>SETUP-BACKEND.md</strong> in this build, then refresh this page.</p>
+    </div>
+  </div>
+
+  <div id="loginView" class="auth-shell" hidden>
+    <div class="auth-card">
+      <img src="nlogo.png" alt="" class="auth-logo">
+      <p class="eyebrow">September Moon</p>
+      <h1>Website Admin</h1>
+      <p>Sign in with your approved Google account to manage products, images and site status.</p>
+      <button id="googleLogin" class="admin-btn admin-btn--primary admin-btn--large" type="button">
+        <span class="google-g">G</span> Continue with Google
+      </button>
+      <p id="loginError" class="form-error" role="alert"></p>
+      <a class="back-link" href="index.html">← Back to website</a>
+    </div>
+  </div>
+
+  <div id="unauthorisedView" class="auth-shell" hidden>
+    <div class="auth-card auth-card--wide">
+      <div class="status-dot status-dot--warning"></div>
+      <h1>Account not authorised</h1>
+      <p>You are signed in successfully, but this Google account has not been added as a website administrator.</p>
+      <div class="uid-box">
+        <span>Firebase user ID</span>
+        <code id="currentUid"></code>
+        <button id="copyUid" class="admin-btn admin-btn--small" type="button">Copy</button>
+      </div>
+      <p class="muted">For first-time setup, create a Firestore document named with this ID in the <code>admins</code> collection. No fields are required.</p>
+      <button id="unauthorisedSignOut" class="admin-btn" type="button">Sign out</button>
+    </div>
+  </div>
+
+  <div id="adminApp" class="admin-layout" hidden>
+    <aside class="admin-sidebar">
+      <a href="index.html" class="admin-brand" aria-label="September Moon website">
+        <img src="nlogo.png" alt="">
+        <span>Admin</span>
+      </a>
+
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <button class="admin-nav__item is-active" data-tab="overview" type="button">Overview</button>
+        <button class="admin-nav__item" data-tab="products" type="button">Products</button>
+        <button class="admin-nav__item" data-tab="images" type="button">Images</button>
+        <button class="admin-nav__item" data-tab="settings" type="button">Site settings</button>
+      </nav>
+
+      <div class="admin-user">
+        <img id="userAvatar" alt="" hidden>
+        <div>
+          <strong id="userName">Admin</strong>
+          <span id="userEmail"></span>
+        </div>
+      </div>
+      <button id="signOut" class="admin-btn admin-btn--sidebar" type="button">Sign out</button>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <p class="eyebrow">September Moon</p>
+          <h1 id="pageTitle">Overview</h1>
+        </div>
+        <div class="admin-topbar__actions">
+          <a class="admin-btn" href="index.html" target="_blank" rel="noopener">View website ↗</a>
+          <button id="addProductTop" class="admin-btn admin-btn--primary" type="button">+ Add product</button>
+        </div>
+      </header>
+
+      <section class="admin-panel is-active" data-panel="overview">
+        <div class="stats-grid">
+          <div class="stat-card"><span>In stock</span><strong id="statInStock">0</strong></div>
+          <div class="stat-card"><span>Coming soon</span><strong id="statComingSoon">0</strong></div>
+          <div class="stat-card"><span>Featured</span><strong id="statFeatured">0</strong></div>
+          <div class="stat-card"><span>Hidden</span><strong id="statHidden">0</strong></div>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="admin-card">
+            <div class="card-heading">
+              <div>
+                <h2>Website status</h2>
+                <p>Switch the public website into maintenance mode.</p>
+              </div>
+              <span id="siteStatusPill" class="status-pill">Live</span>
+            </div>
+            <label class="toggle-row">
+              <span>
+                <strong>Maintenance mode</strong>
+                <small>Visitors will be sent to the maintenance page.</small>
+              </span>
+              <input id="maintenanceQuickToggle" type="checkbox">
+              <span class="switch" aria-hidden="true"></span>
+            </label>
+          </section>
+
+          <section class="admin-card">
+            <div class="card-heading">
+              <div>
+                <h2>Catalogue</h2>
+                <p>Your existing catalogue has been preserved as importable seed data.</p>
+              </div>
+            </div>
+            <div id="seedImportArea">
+              <p id="seedImportText" class="muted"></p>
+              <button id="importSeed" class="admin-btn admin-btn--primary" type="button" hidden>Import existing catalogue</button>
+            </div>
+          </section>
+        </div>
+
+        <section class="admin-card">
+          <div class="card-heading">
+            <div>
+              <h2>Quick actions</h2>
+              <p>Jump straight to the things you are most likely to change.</p>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-action" data-go-tab="products" type="button">Reorder products <span>→</span></button>
+            <button class="quick-action" data-go-tab="images" type="button">Upload images <span>→</span></button>
+            <button class="quick-action" data-go-tab="settings" type="button">Edit maintenance page <span>→</span></button>
+          </div>
+        </section>
+      </section>
+
+      <section class="admin-panel" data-panel="products">
+        <div class="toolbar admin-card">
+          <div class="filter-tabs" role="group" aria-label="Product collection">
+            <button class="filter-tab is-active" data-product-filter="in-stock" type="button">In stock</button>
+            <button class="filter-tab" data-product-filter="coming-soon" type="button">Coming soon</button>
+          </div>
+          <label class="search-box">
+            <span class="sr-only">Search products</span>
+            <input id="productSearch" type="search" placeholder="Search products…">
+          </label>
+          <button id="addProduct" class="admin-btn admin-btn--primary" type="button">+ Add product</button>
+        </div>
+        <p class="reorder-help">Drag products using the handle to reorder them. On touch devices, use ↑ and ↓.</p>
+        <div id="productList" class="product-admin-list"></div>
+      </section>
+
+      <section class="admin-panel" data-panel="images">
+        <section class="admin-card">
+          <div class="card-heading">
+            <div>
+              <h2>Image library</h2>
+              <p>Upload images once, then copy their URL into any product.</p>
+            </div>
+          </div>
+          <label id="imageDropzone" class="upload-zone">
+            <input id="imageUpload" type="file" accept="image/*" multiple hidden>
+            <strong>Drop images here or click to upload</strong>
+            <span>JPG, PNG, WEBP or GIF · up to 10 MB each</span>
+          </label>
+          <div id="uploadProgress" class="upload-progress" aria-live="polite"></div>
+        </section>
+        <div id="imageLibrary" class="image-library"></div>
+      </section>
+
+      <section class="admin-panel" data-panel="settings">
+        <form id="settingsForm" class="admin-card settings-form">
+          <div class="card-heading">
+            <div>
+              <h2>Maintenance page</h2>
+              <p>Control what visitors see while the website is paused.</p>
+            </div>
+          </div>
+          <label class="toggle-row toggle-row--boxed">
+            <span>
+              <strong>Maintenance mode</strong>
+              <small>Admin access remains available while this is switched on.</small>
+            </span>
+            <input id="maintenanceMode" name="maintenanceMode" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="field">
+            <span>Heading</span>
+            <input id="maintenanceTitle" name="maintenanceTitle" type="text" maxlength="100" placeholder="We’ll be right back">
+          </label>
+          <label class="field">
+            <span>Message</span>
+            <textarea id="maintenanceMessage" name="maintenanceMessage" rows="5" maxlength="500" placeholder="We’re making the website a little more magical…"></textarea>
+          </label>
+          <label class="field">
+            <span>Optional image URL</span>
+            <input id="maintenanceImageUrl" name="maintenanceImageUrl" type="url" placeholder="https://…">
+          </label>
+          <div class="form-actions">
+            <button class="admin-btn admin-btn--primary" type="submit">Save site settings</button>
+            <a class="admin-btn" href="maintenance.html" target="_blank" rel="noopener">Preview page ↗</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="productDialog" class="product-dialog">
+    <form id="productForm" method="dialog" class="product-form">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">Product editor</p>
+          <h2 id="productDialogTitle">Add product</h2>
+        </div>
+        <button id="closeProductDialog" class="icon-btn" type="button" aria-label="Close">×</button>
+      </div>
+
+      <input id="productId" type="hidden">
+      <div class="form-grid form-grid--2">
+        <label class="field field--span-2">
+          <span>Title</span>
+          <input id="productTitle" required maxlength="140">
+        </label>
+        <label class="field field--span-2">
+          <span>Description</span>
+          <textarea id="productDescription" rows="3" maxlength="500"></textarea>
+        </label>
+        <label class="field">
+          <span>Price (£)</span>
+          <input id="productPrice" type="number" min="0" step="0.01" required>
+        </label>
+        <label class="field">
+          <span>Collection</span>
+          <select id="productCollection">
+            <option value="in-stock">In stock</option>
+            <option value="coming-soon">Coming soon</option>
+          </select>
+        </label>
+        <label class="field field--span-2">
+          <span>Image URL or existing local path</span>
+          <input id="productImageUrl" placeholder="images/forsale/example.png or https://…">
+        </label>
+        <label class="field field--span-2">
+          <span>Upload a replacement image</span>
+          <input id="productImageFile" type="file" accept="image/*">
+          <small>Uploading here stores the image in your Firebase image library.</small>
+        </label>
+        <div class="image-preview-wrap field--span-2">
+          <img id="productImagePreview" alt="Product preview" hidden>
+        </div>
+        <label class="field">
+          <span>eBay link</span>
+          <input id="productEbayUrl" type="url" placeholder="https://…">
+        </label>
+        <label class="field">
+          <span>Vinted link</span>
+          <input id="productVintedUrl" type="url" placeholder="https://…">
+        </label>
+      </div>
+
+      <div class="toggle-grid">
+        <label class="mini-toggle"><input id="productVisible" type="checkbox" checked><span>Visible</span></label>
+        <label class="mini-toggle"><input id="productFeatured" type="checkbox"><span>Featured</span></label>
+        <label class="mini-toggle"><input id="productSold" type="checkbox"><span>Sold</span></label>
+      </div>
+
+      <div class="dialog-actions">
+        <button id="deleteProduct" class="admin-btn admin-btn--danger" type="button" hidden>Delete</button>
+        <span class="dialog-spacer"></span>
+        <button id="cancelProduct" class="admin-btn" type="button">Cancel</button>
+        <button id="saveProduct" class="admin-btn admin-btn--primary" type="submit">Save product</button>
+      </div>
+      <p id="productFormError" class="form-error" role="alert"></p>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/admin.js?v=1"></script>
+</body>
+</html>
