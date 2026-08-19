@@ -18,7 +18,9 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 
 const filterState = {
   items: [],
-  editingId: null
+  groups: [],
+  editingId: null,
+  editingGroupId: null
 };
 
 
@@ -230,16 +232,51 @@ function injectFiltersAdmin() {
         </div>
 
 
-        <button
-          id="addFilter"
-          class="admin-btn admin-btn--primary"
-          type="button"
-        >
-          + Add filter
-        </button>
+        <div style="
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+">
 
-      </div>
+  <button
+    id="addFilterGroup"
+    class="admin-btn"
+    type="button"
+  >
+    + Add section
+  </button>
 
+  <button
+    id="addFilter"
+    class="admin-btn admin-btn--primary"
+    type="button"
+  >
+    + Add filter
+  </button>
+
+</div>
+
+<div style="margin:8px 0 24px;">
+
+  <h3 style="margin:0 0 10px;">
+    Sections
+  </h3>
+
+  <div
+    id="filterGroupList"
+    class="filter-admin-list"
+  >
+    <div class="filter-admin-empty">
+      No sections yet.
+    </div>
+  </div>
+
+</div>
+
+
+<h3 style="margin:0 0 10px;">
+  Filters
+</h3>
 
       <div
         id="filterAdminList"
@@ -388,6 +425,128 @@ function injectFiltersAdmin() {
 
   document.body.appendChild(dialog);
 
+  const groupDialog =
+  document.createElement("dialog");
+
+groupDialog.id =
+  "filterGroupDialog";
+
+groupDialog.className =
+  "product-dialog";
+
+
+groupDialog.innerHTML = `
+  <form
+    id="filterGroupForm"
+    class="product-form"
+  >
+
+    <div class="dialog-head">
+
+      <div>
+        <p class="eyebrow">
+          Filter section
+        </p>
+
+        <h2 id="filterGroupDialogTitle">
+          Add section
+        </h2>
+      </div>
+
+      <button
+        id="closeFilterGroupDialog"
+        class="icon-btn"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="form-grid">
+
+      <label class="field">
+
+        <span>Section name</span>
+
+        <input
+          id="filterGroupName"
+          maxlength="120"
+          required
+          placeholder="e.g. Colour"
+        >
+
+      </label>
+
+
+      <label
+        class="mini-toggle"
+        style="width:max-content"
+      >
+
+        <input
+          id="filterGroupVisible"
+          type="checkbox"
+          checked
+        >
+
+        <span>
+          Show this section to customers
+        </span>
+
+      </label>
+
+    </div>
+
+
+    <div class="dialog-actions">
+
+      <button
+        id="deleteFilterGroup"
+        class="admin-btn admin-btn--danger"
+        type="button"
+        hidden
+      >
+        Delete
+      </button>
+
+      <span class="dialog-spacer"></span>
+
+      <button
+        id="cancelFilterGroup"
+        class="admin-btn"
+        type="button"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="saveFilterGroup"
+        class="admin-btn admin-btn--primary"
+        type="submit"
+      >
+        Save section
+      </button>
+
+    </div>
+
+
+    <p
+      id="filterGroupFormError"
+      class="form-error"
+      role="alert"
+    ></p>
+
+  </form>
+`;
+
+
+document.body.appendChild(
+  groupDialog
+);
+
 
   // ---------------------------------------------------------
   // Events
@@ -432,6 +591,34 @@ function injectFiltersAdmin() {
     }
   );
 
+  $("#addFilterGroup").addEventListener(
+  "click",
+  () => openFilterGroupDialog()
+);
+
+
+$("#closeFilterGroupDialog").addEventListener(
+  "click",
+  () => groupDialog.close()
+);
+
+
+$("#cancelFilterGroup").addEventListener(
+  "click",
+  () => groupDialog.close()
+);
+
+
+$("#filterGroupForm").addEventListener(
+  "submit",
+  saveFilterGroup
+);
+
+
+$("#deleteFilterGroup").addEventListener(
+  "click",
+  deleteCurrentFilterGroup
+);
 
   $("#addFilter").addEventListener(
     "click",
@@ -463,6 +650,27 @@ function injectFiltersAdmin() {
   );
 }
 
+async function loadFilterGroups() {
+  const snapshot =
+    await getDocs(
+      collection(
+        db,
+        "filterGroups"
+      )
+    );
+
+  filterState.groups =
+    snapshot.docs
+      .map((item) => ({
+        id: item.id,
+        ...item.data()
+      }))
+      .sort(
+        (a, b) =>
+          (a.order ?? 9999) -
+          (b.order ?? 9999)
+      );
+}
 
 // ============================================================
 // Load filters from Firestore
@@ -490,13 +698,19 @@ async function loadFiltersAdmin() {
 
   try {
 
-    const snapshot =
-      await getDocs(
-        collection(
-          db,
-          "productFilters"
-        )
-      );
+    const [
+  snapshot
+] =
+  await Promise.all([
+    getDocs(
+      collection(
+        db,
+        "productFilters"
+      )
+    ),
+
+    loadFilterGroups()
+  ]);
 
 
     filterState.items =
@@ -518,6 +732,7 @@ async function loadFiltersAdmin() {
 
 
     renderFiltersAdmin();
+    renderFilterGroupsAdmin();
 
   } catch (error) {
 
@@ -1038,5 +1253,333 @@ async function persistFilterOrder(items) {
   await batch.commit();
 }
 
+// ============================================================
+// Filter groups / sections
+// ============================================================
+
+function renderFilterGroupsAdmin() {
+  const list =
+    $("#filterGroupList");
+
+  if (!list) {
+    return;
+  }
+
+
+  if (!filterState.groups.length) {
+    list.innerHTML = `
+      <div class="filter-admin-empty">
+        No sections yet.
+        Click <strong>+ Add section</strong>
+        to create one.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML =
+    filterState.groups
+      .map((group, index) => `
+
+        <article class="filter-admin-row">
+
+          <div>
+
+            <div class="filter-admin-row__name">
+              ${escapeHtml(
+                group.name ||
+                "Untitled section"
+              )}
+            </div>
+
+            <div class="filter-admin-row__meta">
+
+              <span class="mini-pill ${
+                group.visible
+                  ? ""
+                  : "mini-pill--hidden"
+              }">
+
+                ${
+                  group.visible
+                    ? "Visible"
+                    : "Hidden"
+                }
+
+              </span>
+
+              <span class="mini-pill">
+                Position ${index + 1}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="filter-admin-row__actions">
+
+            <button
+              class="admin-btn admin-btn--small"
+              type="button"
+              data-group-edit="${escapeHtml(group.id)}"
+            >
+              Edit
+            </button>
+
+          </div>
+
+        </article>
+
+      `)
+      .join("");
+
+
+  $$("[data-group-edit]")
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+          openFilterGroupDialog(
+            button.dataset.groupEdit
+          );
+        }
+      );
+
+    });
+}
+
+
+function openFilterGroupDialog(id = null) {
+  filterState.editingGroupId =
+    id;
+
+
+  const group =
+    id
+      ? filterState.groups.find(
+          (item) =>
+            item.id === id
+        )
+      : null;
+
+
+  $("#filterGroupDialogTitle")
+    .textContent =
+    group
+      ? "Edit section"
+      : "Add section";
+
+
+  $("#filterGroupName")
+    .value =
+    group?.name || "";
+
+
+  $("#filterGroupVisible")
+    .checked =
+    group?.visible ?? true;
+
+
+  $("#deleteFilterGroup")
+    .hidden =
+    !group;
+
+
+  $("#filterGroupFormError")
+    .textContent =
+    "";
+
+
+  $("#filterGroupDialog")
+    .showModal();
+}
+
+
+async function saveFilterGroup(event) {
+  event.preventDefault();
+
+
+  const name =
+    $("#filterGroupName")
+      .value
+      .trim();
+
+
+  const visible =
+    $("#filterGroupVisible")
+      .checked;
+
+
+  const saveButton =
+    $("#saveFilterGroup");
+
+
+  if (!name) {
+    $("#filterGroupFormError")
+      .textContent =
+      "Please enter a section name.";
+
+    return;
+  }
+
+
+  saveButton.disabled =
+    true;
+
+  saveButton.textContent =
+    "Saving…";
+
+
+  try {
+
+    if (filterState.editingGroupId) {
+
+      await updateDoc(
+        doc(
+          db,
+          "filterGroups",
+          filterState.editingGroupId
+        ),
+        {
+          name,
+          visible,
+          updatedAt:
+            serverTimestamp()
+        }
+      );
+
+    } else {
+
+      const newRef =
+        doc(
+          collection(
+            db,
+            "filterGroups"
+          )
+        );
+
+
+      await setDoc(
+        newRef,
+        {
+          name,
+          visible,
+
+          order:
+            filterState.groups.length,
+
+          createdAt:
+            serverTimestamp(),
+
+          updatedAt:
+            serverTimestamp()
+        }
+      );
+
+    }
+
+
+    $("#filterGroupDialog")
+      .close();
+
+
+    await loadFilterGroups();
+
+    renderFilterGroupsAdmin();
+
+
+    filterToast(
+      filterState.editingGroupId
+        ? "Section updated."
+        : "Section added."
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    $("#filterGroupFormError")
+      .textContent =
+      error.message ||
+      "Could not save section.";
+
+  } finally {
+
+    saveButton.disabled =
+      false;
+
+    saveButton.textContent =
+      "Save section";
+
+  }
+}
+
+
+async function deleteCurrentFilterGroup() {
+  if (!filterState.editingGroupId) {
+    return;
+  }
+
+
+  const group =
+    filterState.groups.find(
+      (item) =>
+        item.id ===
+        filterState.editingGroupId
+    );
+
+
+  if (
+    !confirm(
+      `Delete the section “${
+        group?.name ||
+        "this section"
+      }”?`
+    )
+  ) {
+    return;
+  }
+
+
+  try {
+
+    await deleteDoc(
+      doc(
+        db,
+        "filterGroups",
+        filterState.editingGroupId
+      )
+    );
+
+
+    $("#filterGroupDialog")
+      .close();
+
+
+    await loadFilterGroups();
+
+    renderFilterGroupsAdmin();
+
+
+    filterToast(
+      "Section deleted."
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    filterToast(
+      error.message ||
+      "Could not delete section.",
+      true
+    );
+
+  }
+}
 
 injectFiltersAdmin();
