@@ -1634,10 +1634,21 @@ async function loadImages() {
         (item) =>
           /\.(jpe?g|png|webp|gif|avif)$/i.test(item.name)
       )
-      .sort(
-        (a, b) =>
-          a.name.localeCompare(b.name)
-      );
+      .sort((a, b) => {
+  const getTimestamp = (name) => {
+    const match = name.match(/^(\d{13})-/);
+    return match ? Number(match[1]) : 0;
+  };
+
+  const aTime = getTimestamp(a.name);
+  const bTime = getTimestamp(b.name);
+
+  if (aTime !== bTime) {
+    return bTime - aTime;
+  }
+
+  return a.name.localeCompare(b.name);
+});
 
     if (!images.length) {
       library.innerHTML =
@@ -1974,10 +1985,21 @@ async function openImagePicker() {
             item.name
           )
       )
-      .sort(
-        (a, b) =>
-          a.name.localeCompare(b.name)
-      );
+      .sort((a, b) => {
+  const getTimestamp = (name) => {
+    const match = name.match(/^(\d{13})-/);
+    return match ? Number(match[1]) : 0;
+  };
+
+  const aTime = getTimestamp(a.name);
+  const bTime = getTimestamp(b.name);
+
+  if (aTime !== bTime) {
+    return bTime - aTime;
+  }
+
+  return a.name.localeCompare(b.name);
+});
 
     if (!images.length) {
       grid.innerHTML =
