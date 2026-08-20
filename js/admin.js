@@ -29,6 +29,7 @@ const state = {
   user: null,
   products: [],
   productFilters: [],
+  productFilterGroups: [],
   settings: {},
   productFilter: "in-stock",
   productSearch: "",
@@ -218,6 +219,7 @@ async function initialiseAdmin(user) {
   await Promise.all([
   loadProducts(),
   loadProductFilters(),
+  loadProductFilterGroups(),
   loadSettings()
 ]);
 }
@@ -247,6 +249,36 @@ async function loadProductFilters() {
   } catch (error) {
     console.error(
       "Could not load product filters:",
+      error
+    );
+  }
+}
+
+async function loadProductFilterGroups() {
+  try {
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "filterGroups"
+        )
+      );
+
+    state.productFilterGroups =
+      snapshot.docs
+        .map((item) => ({
+          id: item.id,
+          ...item.data()
+        }))
+        .sort(
+          (a, b) =>
+            (a.order ?? 9999) -
+            (b.order ?? 9999)
+        );
+
+  } catch (error) {
+    console.error(
+      "Could not load product filter groups:",
       error
     );
   }
@@ -315,30 +347,95 @@ function renderProductFilterChoices(selectedIds = []) {
   }
 
   container.innerHTML =
-    state.productFilters
-      .map((filter) => `
-        <label
-          class="mini-toggle"
-          style="margin:0;"
+  state.productFilterGroups
+    .map((group) => {
+
+      const groupFilters =
+        state.productFilters
+          .filter(
+            (filter) =>
+              filter.groupId === group.id
+          )
+          .sort((a, b) =>
+            String(a.name || "").localeCompare(
+              String(b.name || ""),
+              undefined,
+              {
+                numeric: true,
+                sensitivity: "base"
+              }
+            )
+          );
+
+
+      if (!groupFilters.length) {
+        return "";
+      }
+
+
+      return `
+        <div
+          style="
+            grid-column:1 / -1;
+            margin-top:8px;
+          "
         >
-          <input
-            type="checkbox"
-            name="productFilter"
-            value="${escapeHtml(filter.id)}"
-            ${selected.has(filter.id) ? "checked" : ""}
+
+          <strong
+            style="
+              display:block;
+              margin-bottom:8px;
+              color:var(--text);
+            "
+          >
+            ${escapeHtml(
+              group.name ||
+              "Untitled section"
+            )}
+          </strong>
+
+
+          <div
+            style="
+              display:grid;
+              grid-template-columns:
+                repeat(auto-fit,minmax(170px,1fr));
+              gap:8px;
+            "
           >
 
-          <span>
-            ${escapeHtml(filter.name || "Unnamed filter")}
-            ${
-              filter.visible
-                ? ""
-                : ' <small>(hidden)</small>'
-            }
-          </span>
-        </label>
-      `)
-      .join("");
+            ${groupFilters
+              .map((filter) => `
+                <label
+                  class="mini-toggle"
+                  style="margin:0;"
+                >
+
+                  <input
+                    type="checkbox"
+                    name="productFilter"
+                    value="${escapeHtml(filter.id)}"
+                    ${selected.has(filter.id) ? "checked" : ""}
+                  >
+
+                  <span>
+                    ${escapeHtml(
+                      filter.name ||
+                      "Unnamed filter"
+                    )}
+                  </span>
+
+                </label>
+              `)
+              .join("")}
+
+          </div>
+
+        </div>
+      `;
+
+    })
+    .join("");
 }
 
 async function loadProducts() {
