@@ -374,25 +374,29 @@ function renderProductFilterChoices(selectedIds = []) {
 
 
       return `
-        <div
-          style="
-            grid-column:1 / -1;
-            margin-top:8px;
-          "
-        >
+  <details
+    style="
+      grid-column:1 / -1;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:white;
+      overflow:hidden;
+    "
+  >
 
-          <strong
-            style="
-              display:block;
-              margin-bottom:8px;
-              color:var(--text);
-            "
-          >
-            ${escapeHtml(
-              group.name ||
-              "Untitled section"
-            )}
-          </strong>
+    <summary
+      style="
+        padding:12px 14px;
+        cursor:pointer;
+        font-weight:800;
+        color:var(--text);
+      "
+    >
+      ${escapeHtml(
+        group.name ||
+        "Untitled section"
+      )}
+    </summary>
 
 
           <div
@@ -431,7 +435,7 @@ function renderProductFilterChoices(selectedIds = []) {
 
           </div>
 
-        </div>
+        </details>
       `;
 
     })
@@ -888,7 +892,10 @@ async function moveProduct(
 // ============================================================
 
 async function openProductDialog(id = null) {
-  await loadProductFilters();
+  await Promise.all([
+    loadProductFilters(),
+    loadProductFilterGroups()
+  ]);
 
   state.editingId = id;
 
