@@ -226,13 +226,13 @@ async function setupCollectionFilters() {
 
 
       return `
-        <div class="catalog-filter__group">
+  <details class="catalog-filter__group">
 
-          <h4 class="catalog-filter__group-title">
-            ${escapeHtml(group.name || "")}
-          </h4>
+    <summary class="catalog-filter__group-title">
+      ${escapeHtml(group.name || "")}
+    </summary>
 
-          <div class="catalog-filter__group-options">
+    <div class="catalog-filter__group-options">
 
             ${groupFilters
               .map((filter) => `
@@ -255,7 +255,7 @@ async function setupCollectionFilters() {
 
           </div>
 
-        </div>
+        </details>
       `;
 
     })
