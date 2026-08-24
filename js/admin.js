@@ -1833,16 +1833,32 @@ async function loadImages() {
     '<div class="empty-state">Loading GitHub images…</div>';
 
   try {
-    const response = await fetch(
-      GITHUB_IMAGES_API,
-      {
-        cache: "no-store",
+    const user =
+  auth.currentUser;
 
-        headers: {
-          Accept: "application/vnd.github+json"
-        }
-      }
-    );
+if (!user) {
+  throw new Error(
+    "You must be signed in to load images."
+  );
+}
+
+const idToken =
+  await user.getIdToken(true);
+
+const response = await fetch(
+  `${IMAGE_UPLOAD_ENDPOINT}?action=list`,
+  {
+    cache: "no-store",
+
+    headers: {
+      "Authorization":
+        `Bearer ${idToken}`,
+
+      "Accept":
+        "application/json"
+    }
+  }
+);
 
     if (!response.ok) {
       throw new Error(
