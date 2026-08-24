@@ -2200,15 +2200,32 @@ async function openImagePicker() {
   dialog.showModal();
 
   try {
-    const response = await fetch(
-      GITHUB_IMAGES_API,
-      {
-        cache: "no-store",
-        headers: {
-          Accept: "application/vnd.github+json"
-        }
-      }
-    );
+    const user =
+  auth.currentUser;
+
+if (!user) {
+  throw new Error(
+    "You must be signed in to load images."
+  );
+}
+
+const idToken =
+  await user.getIdToken(true);
+
+const response = await fetch(
+  `${IMAGE_UPLOAD_ENDPOINT}?action=list`,
+  {
+    cache: "no-store",
+
+    headers: {
+      "Authorization":
+        `Bearer ${idToken}`,
+
+      "Accept":
+        "application/json"
+    }
+  }
+);
 
     if (!response.ok) {
       throw new Error(
