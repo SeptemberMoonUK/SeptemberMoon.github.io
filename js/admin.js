@@ -1313,6 +1313,57 @@ formData.append(
   };
 }
 
+async function waitForPublicImage(imagePath) {
+  const url =
+    new URL(
+      imagePath,
+      window.location.origin
+    );
+
+  const giveUpAt =
+    Date.now() +
+    (10 * 60 * 1000);
+
+
+  while (Date.now() < giveUpAt) {
+    try {
+      const checkUrl =
+        `${url.href}${
+          url.search ? "&" : "?"
+        }ready=${Date.now()}`;
+
+
+      const response =
+        await fetch(
+          checkUrl,
+          {
+            method: "GET",
+            cache: "no-store"
+          }
+        );
+
+
+      if (response.ok) {
+        return;
+      }
+
+    } catch (_) {
+      // GitHub Pages is not ready yet.
+    }
+
+
+    await new Promise(
+      (resolve) =>
+        setTimeout(resolve, 10000)
+    );
+  }
+
+
+  throw new Error(
+    "The new image was uploaded, but GitHub Pages did not publish it within 10 minutes."
+  );
+}
+
 async function optimiseExistingProductImage(product) {
   const currentPath =
     String(product.imageUrl || "").trim();
@@ -1378,10 +1429,17 @@ async function optimiseExistingProductImage(product) {
 
 
   const uploaded =
-    await uploadImage(file);
+  await uploadImage(file);
 
 
-  await updateDoc(
+// Wait until GitHub Pages has
+// actually published the new image.
+await waitForPublicImage(
+  uploaded.url
+);
+
+
+await updateDoc(
     doc(
       db,
       "products",
@@ -2695,6 +2753,136 @@ function addImageLibraryButton() {
     button
   );
 }
+
+async function optimiseAllExistingImages() {
+  const button =
+    $("#optimiseAllImages");
+
+
+  const products =
+    state.products.filter(
+      (product) => {
+
+        const imageUrl =
+          String(
+            product.imageUrl || ""
+          ).trim();
+
+
+        if (!imageUrl) {
+          return false;
+        }
+
+
+        if (
+          imageUrl ===
+          "images/comingsoon.png"
+        ) {
+          return false;
+        }
+
+
+        if (
+          /\.(webp|gif)(?:\?.*)?$/i.test(
+            imageUrl
+          )
+        ) {
+          return false;
+        }
+
+
+        return true;
+      }
+    );
+
+
+  if (!products.length) {
+    toast(
+      "All product images are already optimised."
+    );
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      `Optimise ${products.length} existing product images?\n\nKeep this admin tab open until it finishes.`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const originalText =
+    button.textContent;
+
+
+  button.disabled = true;
+
+
+  let completed = 0;
+  let failed = 0;
+
+
+  for (
+    let index = 0;
+    index < products.length;
+    index++
+  ) {
+    const product =
+      products[index];
+
+
+    button.textContent =
+      `Optimising ${index + 1} of ${products.length}…`;
+
+
+    try {
+      await optimiseExistingProductImage(
+        product
+      );
+
+      completed++;
+
+    } catch (error) {
+      failed++;
+
+      console.error(
+        `Could not optimise ${product.title}:`,
+        error
+      );
+    }
+  }
+
+
+  button.textContent =
+    "Refreshing products…";
+
+
+  await loadProducts();
+
+
+  button.disabled = false;
+
+  button.textContent =
+    originalText;
+
+
+  if (failed) {
+    toast(
+      `${completed} images optimised. ${failed} failed.`,
+      true
+    );
+
+  } else {
+    toast(
+      `${completed} product images optimised.`
+    );
+  }
+}
 // ============================================================
 // Events
 // ============================================================
@@ -2818,6 +3006,10 @@ function wireEvents() {
     );
   });
 
+  $("#optimiseAllImages")?.addEventListener(
+  "click",
+  optimiseAllExistingImages
+);
 
   $("#productForm").addEventListener(
     "submit",
