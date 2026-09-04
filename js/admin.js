@@ -628,6 +628,20 @@ function renderProducts() {
               Edit
             </button>
 
+            ${product.imageUrl &&
+!/\.(webp|gif)(?:\?.*)?$/i.test(product.imageUrl)
+  ? `
+    <button
+      class="icon-action"
+      type="button"
+      data-optimise-image="${escapeHtml(product.id)}"
+    >
+      Optimise image
+    </button>
+  `
+  : ""
+}
+
           </div>
 
         </div>
@@ -648,6 +662,76 @@ function wireProductRowEvents() {
     });
   });
 
+    $$("[data-optimise-image]")
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        async () => {
+
+          const product =
+            state.products.find(
+              (item) =>
+                item.id ===
+                button.dataset.optimiseImage
+            );
+
+
+          if (!product) {
+            toast(
+              "Product could not be found.",
+              true
+            );
+
+            return;
+          }
+
+
+          if (
+            !confirm(
+              `Optimise the image for “${product.title}”?`
+            )
+          ) {
+            return;
+          }
+
+
+          button.disabled = true;
+
+          const oldText =
+            button.textContent;
+
+          button.textContent =
+            "Optimising…";
+
+
+          try {
+            await optimiseExistingProductImage(
+              product
+            );
+
+
+            await loadProducts();
+
+
+            toast(
+              "Product image optimised."
+            );
+
+          } catch (error) {
+            toast(
+              errorMessage(error),
+              true
+            );
+
+            button.disabled = false;
+
+            button.textContent =
+              oldText;
+          }
+        }
+      );
+    });
 
   $$("[data-move]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1229,6 +1313,95 @@ formData.append(
   };
 }
 
+async function optimiseExistingProductImage(product) {
+  const currentPath =
+    String(product.imageUrl || "").trim();
+
+  if (!currentPath) {
+    throw new Error(
+      "This product has no image."
+    );
+  }
+
+
+  if (/\.webp$/i.test(currentPath)) {
+    throw new Error(
+      "This image is already WebP."
+    );
+  }
+
+
+  const imageUrl =
+    new URL(
+      currentPath,
+      window.location.href
+    ).href;
+
+
+  const response =
+    await fetch(
+      imageUrl,
+      {
+        cache: "no-store"
+      }
+    );
+
+
+  if (!response.ok) {
+    throw new Error(
+      "Could not download the existing image."
+    );
+  }
+
+
+  const blob =
+    await response.blob();
+
+
+  const originalName =
+    currentPath
+      .split("/")
+      .pop() ||
+      "product-image.png";
+
+
+  const file =
+    new File(
+      [blob],
+      originalName,
+      {
+        type:
+          blob.type ||
+          "image/png"
+      }
+    );
+
+
+  const uploaded =
+    await uploadImage(file);
+
+
+  await updateDoc(
+    doc(
+      db,
+      "products",
+      product.id
+    ),
+    {
+      imageUrl:
+        uploaded.url,
+
+      imagePath:
+        uploaded.path,
+
+      updatedAt:
+        serverTimestamp()
+    }
+  );
+
+
+  return uploaded;
+}
 
 // ============================================================
 // Save product
