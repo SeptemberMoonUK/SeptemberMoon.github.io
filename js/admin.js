@@ -1005,6 +1005,131 @@ function updateProductPreview() {
 // GitHub image uploader
 // ============================================================
 
+async function optimiseImage(file) {
+  // Leave GIFs alone so animated images
+  // do not lose their animation.
+  if (file.type === "image/gif") {
+    return file;
+  }
+
+
+  const bitmap =
+    await createImageBitmap(file);
+
+
+  const maxDimension = 1400;
+
+  const scale =
+    Math.min(
+      1,
+      maxDimension /
+        Math.max(
+          bitmap.width,
+          bitmap.height
+        )
+    );
+
+
+  const width =
+    Math.max(
+      1,
+      Math.round(
+        bitmap.width * scale
+      )
+    );
+
+
+  const height =
+    Math.max(
+      1,
+      Math.round(
+        bitmap.height * scale
+      )
+    );
+
+
+  const canvas =
+    document.createElement("canvas");
+
+  canvas.width = width;
+  canvas.height = height;
+
+
+  const context =
+    canvas.getContext("2d");
+
+
+  if (!context) {
+    bitmap.close?.();
+
+    throw new Error(
+      "Could not optimise the image."
+    );
+  }
+
+
+  context.drawImage(
+    bitmap,
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  bitmap.close?.();
+
+
+  const blob =
+    await new Promise(
+      (resolve) => {
+        canvas.toBlob(
+          resolve,
+          "image/webp",
+          0.82
+        );
+      }
+    );
+
+
+  if (!blob) {
+    throw new Error(
+      "Could not optimise the image."
+    );
+  }
+
+
+  const originalName =
+    file.name.replace(
+      /\.[^.]+$/,
+      ""
+    );
+
+
+  const optimisedFile =
+    new File(
+      [blob],
+      `${originalName}.webp`,
+      {
+        type: "image/webp",
+        lastModified: Date.now()
+      }
+    );
+
+
+  // Don't replace the original if
+  // optimisation somehow made it larger.
+  if (
+    optimisedFile.size >= file.size &&
+    scale === 1
+  ) {
+    return file;
+  }
+
+
+  return optimisedFile;
+}
+
 async function uploadImage(file) {
   if (!file.type.startsWith("image/")) {
     throw new Error(
@@ -1038,15 +1163,19 @@ async function uploadImage(file) {
     await user.getIdToken(true);
 
 
-  const formData =
-    new FormData();
+const optimisedFile =
+  await optimiseImage(file);
 
 
-  formData.append(
-    "file",
-    file,
-    file.name
-  );
+const formData =
+  new FormData();
+
+
+formData.append(
+  "file",
+  optimisedFile,
+  optimisedFile.name
+);
 
 
   const response =
